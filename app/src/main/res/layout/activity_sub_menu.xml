@@ -4,6 +4,6 @@
     android:layout_height="match_parent"
     android:keepScreenOn="true"
     android:background="@drawable/sub_menu"
-    tools:context="com.interapt.mikenguyen.tacobelltraining.MainMenuActivity">
+    tools:context="com.interapt.mikenguyen.tacobelltraining.SubMenuActivity">
 
 </RelativeLayout>

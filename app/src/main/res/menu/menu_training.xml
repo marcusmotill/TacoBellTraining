@@ -1,6 +1,17 @@
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:context="com.interapt.mikenguyen.tacobelltraining.TrainingActivity">
-    <item android:id="@+id/action_settings" android:title="@string/action_settings"
-        android:orderInCategory="100" android:showAsAction="never" />
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/play_video_menu_item"
+        android:title="PLAY_VIDEO"/>
+    <item
+        android:id="@+id/pause_video_menu_item"
+        android:title="PAUSE_VIDEO"/>
+    <item
+        android:id="@+id/go_forward_menu_item"
+        android:title="GO_FORWARD"/>
+    <item
+        android:id="@+id/go_back_menu_item"
+        android:title="GO_BACK"/>
+    <item
+        android:id="@+id/retry_menu_item"
+        android:title="RETRY"/>
 </menu>

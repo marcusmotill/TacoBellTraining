@@ -24,7 +24,6 @@ public class SubMenuActivity extends Activity {
         setContentView(R.layout.activity_sub_menu);
     }
 
-
     @Override
     public boolean onCreatePanelMenu(int featureId, Menu menu) {
         if (featureId == WindowUtils.FEATURE_VOICE_COMMANDS) {
