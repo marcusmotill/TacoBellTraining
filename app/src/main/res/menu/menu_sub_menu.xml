@@ -7,13 +7,6 @@
         android:title="ROOK"/>
     <item
         android:id="@+id/three_menu_item"
-        android:title="DRIVING"/>
-    <item
-        android:id="@+id/four_menu_item"
-        android:title="TRANSIT"/>
-    <item
-        android:id="@+id/five_menu_item"
-        android:title="UNDO"/>
-
+        android:title="GO_BACK"/>
 </menu>
 
