@@ -1,9 +1,13 @@
 package com.interapt.mikenguyen.tacobelltraining;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
+import android.speech.SpeechRecognizer;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -14,12 +18,42 @@ import java.util.List;
 
 public class MainMenuActivity extends Activity {
     private static final int SPEECH_REQUEST = 0;
+    private static AudioManager mAudioManager;
+    private SpeechRecognizer sr;
+    private Intent intent;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // Requests a voice menu on this activity.
-        getWindow().requestFeature(WindowUtils.FEATURE_VOICE_COMMANDS);
+        //getWindow().requestFeature(WindowUtils.FEATURE_VOICE_COMMANDS);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
+
+        Context context = this.getApplicationContext();
+        mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
+        //  mAudioManager.setStreamSolo(AudioManager.STREAM_VOICE_CALL, true);
+        //      intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, "en-US");
+        intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,context.getPackageName());
+        sr = SpeechRecognizer.createSpeechRecognizer(context);
+        sr.setRecognitionListener(new SpeechListener(context, sr, intent));
+
+        //sr.startListening(intent);
+        Log.i("111111", "11111111" + "in");
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();  // Always call the superclass method first
+
+        //sr.stopListening();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();  // Always call the superclass method first
+
+        //sr.startListening(intent);
     }
 
     @Override

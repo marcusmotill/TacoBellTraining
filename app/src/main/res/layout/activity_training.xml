@@ -13,7 +13,20 @@
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="Large Text"
         android:fontFamily="sans-serif-light"
-        android:textColor="#b2fb49"
-        android:layout_centerVertical="true"
-        android:layout_alignParentEnd="true" />
+        android:textColor="#a0e141"
+        android:layout_marginTop="123dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="15dp" />
+
+    <ImageView
+        android:id="@+id/play_pause_imageview"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="83dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="10dp"
+        android:contentDescription="Play or Pause Icon" />
+
 </RelativeLayout>

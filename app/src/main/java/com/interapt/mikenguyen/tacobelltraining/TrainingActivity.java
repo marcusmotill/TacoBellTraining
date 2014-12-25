@@ -8,6 +8,7 @@ import android.os.CountDownTimer;
 import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -21,8 +22,9 @@ public class TrainingActivity extends Activity {
     private FoodItem foodItem;
     private TextView timerTextView;
     private CountDownTimer countDownTimer;
+    private ImageView playPauseImageView;
     /** The amount of time to show each step */
-    private static final long STEP_DISPLAY_TIME = 7000;
+    private static final long STEP_DISPLAY_TIME = 9000;
     /** Handler used to post a delayed the display of each step */
     private final Handler mHandler = new Handler();
     //Boolean to play/pause the training
@@ -36,7 +38,8 @@ public class TrainingActivity extends Activity {
         setContentView(R.layout.activity_training);
         //init
         timerTextView = (TextView) findViewById(R.id.timer_texview);
-        countDownTimer =  new CountDownTimer(8000, 1000) {
+        playPauseImageView = (ImageView) findViewById(R.id.play_pause_imageview);
+        countDownTimer =  new CountDownTimer(STEP_DISPLAY_TIME + 1000, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 if(play){
@@ -125,8 +128,10 @@ public class TrainingActivity extends Activity {
     }
 
     private void resetTraining(){
+        play = true;
         foodItem.setCurrentStep(1);
         displayStepImage();
+        startPlayingStep();
     }
 
     private void playTraining() {
@@ -136,16 +141,29 @@ public class TrainingActivity extends Activity {
 
     private void pauseTraining(){
         play = false;
+        setPlayPauseIcon(false);
         timerTextView.setText("");
     }
 
     private void startPlayingStep(){
+        setPlayPauseIcon(true);
         mHandler.postDelayed(stepDelayRunnable, STEP_DISPLAY_TIME);
         countDownTimer.start();
     }
 
-    private void createCountDownTimer(long TIME) {
-
+    private void setPlayPauseIcon(boolean playPause){
+        //if playPause is true, set play icon & vice versa for pause icon
+        int imageResource = 0;
+        if(playPause){
+            imageResource = getResources().getIdentifier("ic_music_play_50", "drawable", getPackageName());
+        }
+        else{
+            imageResource = getResources().getIdentifier("ic_music_pause_50", "drawable", getPackageName());
+        }
+        if(imageResource != 0){
+            Drawable playIcon = getResources().getDrawable(imageResource);
+            playPauseImageView.setImageDrawable(playIcon);
+        }
     }
 
     private Runnable stepDelayRunnable = new Runnable() {
