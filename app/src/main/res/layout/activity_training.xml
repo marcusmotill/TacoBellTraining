@@ -14,19 +14,18 @@
         android:text="Large Text"
         android:fontFamily="sans-serif-light"
         android:textColor="#a0e141"
-        android:layout_marginTop="123dp"
-        android:layout_alignParentTop="true"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="15dp" />
+        android:layout_marginEnd="17dp" />
 
     <ImageView
         android:id="@+id/play_pause_imageview"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="83dp"
-        android:layout_alignParentTop="true"
+        android:layout_width="10dp"
+        android:layout_height="10dp"
+        android:layout_marginBottom="25sp"
+        android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="10dp"
+        android:layout_marginEnd="12dp"
         android:contentDescription="Play or Pause Icon" />
 
 </RelativeLayout>

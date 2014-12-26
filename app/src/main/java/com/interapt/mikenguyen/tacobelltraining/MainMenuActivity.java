@@ -3,57 +3,59 @@ package com.interapt.mikenguyen.tacobelltraining;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
+import android.view.animation.RotateAnimation;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import com.google.android.glass.media.Sounds;
 import com.google.android.glass.view.WindowUtils;
 
 import java.util.List;
 
 
 public class MainMenuActivity extends Activity {
+
     private static final int SPEECH_REQUEST = 0;
-    private static AudioManager mAudioManager;
-    private SpeechRecognizer sr;
-    private Intent intent;
+    private static SpeechRecognizer speechRecognizer;
+    private static Intent speechRecognizerIntent;
+    private static ImageView micImageView;
+    private static ImageView loadingImageView;
+    private static RotateAnimation rotateAnimation;
+    private static TextView partialSpeechResult;
+    private static AudioManager audioManager;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        // Requests a voice menu on this activity.
-        //getWindow().requestFeature(WindowUtils.FEATURE_VOICE_COMMANDS);
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
-
-        Context context = this.getApplicationContext();
-        mAudioManager = (AudioManager) context.getSystemService(Context.AUDIO_SERVICE);
-        //  mAudioManager.setStreamSolo(AudioManager.STREAM_VOICE_CALL, true);
-        //      intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, "en-US");
-        intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        intent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL,RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
-        intent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE,context.getPackageName());
-        sr = SpeechRecognizer.createSpeechRecognizer(context);
-        sr.setRecognitionListener(new SpeechListener(context, sr, intent));
-
-        //sr.startListening(intent);
-        Log.i("111111", "11111111" + "in");
+        micImageView = (ImageView) findViewById(R.id.micImageView);
+        loadingImageView = (ImageView) findViewById(R.id.loadingImageView);
+        partialSpeechResult = (TextView) findViewById(R.id.speech_textview);
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        initLoadingAnimation();
+        initSpeechRecognition();
     }
 
     @Override
     public void onPause() {
-        super.onPause();  // Always call the superclass method first
-
-        //sr.stopListening();
+        super.onPause();
+        speechRecognizer.cancel();
     }
 
     @Override
     public void onResume() {
-        super.onResume();  // Always call the superclass method first
-
-        //sr.startListening(intent);
+        super.onResume();
+        speechRecognizer.startListening(speechRecognizerIntent);
     }
 
     @Override
@@ -96,37 +98,35 @@ public class MainMenuActivity extends Activity {
             }
             return true;
         }
-        // Good practice to pass through to super if not handled
         return super.onMenuItemSelected(featureId, item);
     }
 
+    public void setMicImageView(Drawable micIcon){
+        micImageView.setImageDrawable(micIcon);
+    }
 
-//    @Override
-//    public boolean onCreateOptionsMenu(Menu menu) {
-//        // Inflate the menu; this adds items to the action bar if it is present.
-//        getMenuInflater().inflate(R.menu.menu_main_menu, menu);
-//        return true;
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(MenuItem item) {
-//        // Handle action bar item clicks here. The action bar will
-//        // automatically handle clicks on the Home/Up button, so long
-//        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            return true;
-//        }
-//
-//        return super.onOptionsItemSelected(item);
-//    }
+    // Toggle between showing/hiding the indeterminate slider.
+    public void showLoadingAnimation(){
+        loadingImageView.startAnimation(rotateAnimation);
+    }
 
-    private void startSubMenuActivity(int menuItemNumber){
+    public void hideLoadingAnimation(){
+        loadingImageView.setAnimation(null);
+    }
+
+    public void setPartialSpeechResult(String partialResult){
+        partialSpeechResult.setText(partialResult);
+    }
+
+    public void startSubMenuActivity(int menuItemNumber){
+        audioManager.playSoundEffect(Sounds.SUCCESS);
         Intent myIntent = new Intent(this, SubMenuActivity.class);
         myIntent.putExtra("menuItemNumber", menuItemNumber);
         startActivity(myIntent);
+    }
+
+    public void playDisallowedSound(){
+        audioManager.playSoundEffect(Sounds.DISALLOWED);
     }
 
     private void displaySpeechRecognizer() {
@@ -144,5 +144,23 @@ public class MainMenuActivity extends Activity {
             // Do something with spokenText.
         }
         super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    //Speech recognition initialization
+    private void initSpeechRecognition(){
+        Context context = this.getApplicationContext();
+        speechRecognizerIntent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_LANGUAGE_MODEL, RecognizerIntent.LANGUAGE_MODEL_FREE_FORM);
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_CALLING_PACKAGE, getPackageName());
+        speechRecognizerIntent.putExtra(RecognizerIntent.EXTRA_PARTIAL_RESULTS, true);
+        speechRecognizer = SpeechRecognizer.createSpeechRecognizer(context);
+        speechRecognizer.setRecognitionListener(new SpeechListener(this, context, speechRecognizer, speechRecognizerIntent));
+    }
+
+    private void initLoadingAnimation(){
+        rotateAnimation = new RotateAnimation(0f, 350f, 48f, 48f);
+        rotateAnimation.setInterpolator(new LinearInterpolator());
+        rotateAnimation.setRepeatCount(Animation.INFINITE);
+        rotateAnimation.setDuration(700);
     }
 }

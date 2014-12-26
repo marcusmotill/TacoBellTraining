@@ -6,4 +6,48 @@
     android:background="@drawable/food_menu"
     tools:context="com.interapt.mikenguyen.tacobelltraining.MainMenuActivity">
 
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/micImageView"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="70px"
+        android:layout_marginTop="100px"/>
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/loadingImageView"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentStart="true"
+        android:visibility="invisible"
+        android:layout_marginStart="70px"
+        android:layout_marginTop="100px"
+        android:background="@drawable/ic_loading_circle" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:maxLength="14"
+        android:id="@+id/speech_textview"
+        android:fontFamily="sans-serif-light"
+        android:textColor="#9918b902"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="130px"
+        android:layout_marginStart="50px" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:fontFamily="sans-serif-light"
+        android:textColor="#ff000000"
+        android:text="Say &quot;number&quot;,\nthen say a menu\nitem number"
+        android:id="@+id/hint_textview"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="20px"
+        android:layout_marginStart="20px"/>
 </RelativeLayout>
