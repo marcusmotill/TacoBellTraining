@@ -6,8 +6,10 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -29,6 +31,8 @@ public class TrainingActivity extends Activity {
     private final Handler mHandler = new Handler();
     //Boolean to play/pause the training
     private boolean play = true;
+    //Keep track of time left in the count down timer
+    private long currentTime = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +47,8 @@ public class TrainingActivity extends Activity {
 
             public void onTick(long millisUntilFinished) {
                 if(play){
-                    timerTextView.setText(millisUntilFinished / 1000 + "S");
+                    currentTime = millisUntilFinished / 1000;
+                    timerTextView.setText(currentTime + "S");
                 }
             }
 
@@ -58,7 +63,7 @@ public class TrainingActivity extends Activity {
             initializeFoodItem();
             displayStepImage();
         }
-        startPlayingStep();
+        startTraining();
     }
 
     @Override
@@ -83,15 +88,16 @@ public class TrainingActivity extends Activity {
             play = false;
             switch (item.getItemId()) {
                 case R.id.play_video_menu_item:
-                    playTraining();
+                    startTraining();
                     break;
                 case R.id.pause_video_menu_item:
                     pauseTraining();
                     break;
                 case R.id.go_forward_menu_item:
-                    nextStep();
+                    manualNextStep();
                     break;
                 case R.id.go_back_menu_item:
+                    pauseTraining();
                     previousStep();
                     break;
                 case R.id.retry_menu_item:
@@ -119,24 +125,49 @@ public class TrainingActivity extends Activity {
     private void nextStep(){
         foodItem.nextStep();
         displayStepImage();
+        if(!foodItem.isFinishTraining()){
+            mHandler.postDelayed(stepDelayRunnable, STEP_DISPLAY_TIME);
+            countDownTimer.start();
+        }
+    }
+
+    private void manualNextStep() {
+        if(!foodItem.isFinishTraining()){
+            if(foodItem.isLastStep()){
+                playPauseImageView.setVisibility(View.INVISIBLE);
+                timerTextView.setText("");
+            } else {
+                playPauseImageView.setVisibility(View.VISIBLE);
+                pauseTraining();
+            }
+            foodItem.nextStep();
+            displayStepImage();
+        } else {
+            startTestActivity();
+        }
     }
 
     private void previousStep(){
-        foodItem.previousStep();
-        displayStepImage();
-        play = false;
+        if(!foodItem.previousStep()){
+            if(foodItem.isFinishTraining()){
+                foodItem.setFinishTraining(false);
+                playPauseImageView.setVisibility(View.VISIBLE);
+            }
+            displayStepImage();
+        } else {
+            finish();
+        }
     }
 
     private void resetTraining(){
+        if(foodItem.isFinishTraining()){
+            foodItem.setFinishTraining(false);
+            playPauseImageView.setVisibility(View.VISIBLE);
+        }
         play = true;
         foodItem.setCurrentStep(1);
         displayStepImage();
-        startPlayingStep();
-    }
-
-    private void playTraining() {
-        play = true;
-        startPlayingStep();
+        startTraining();
     }
 
     private void pauseTraining(){
@@ -145,10 +176,13 @@ public class TrainingActivity extends Activity {
         timerTextView.setText("");
     }
 
-    private void startPlayingStep(){
-        setPlayPauseIcon(true);
-        mHandler.postDelayed(stepDelayRunnable, STEP_DISPLAY_TIME);
-        countDownTimer.start();
+    private void startTraining(){
+        if(!foodItem.isFinishTraining()){
+            play = true;
+            setPlayPauseIcon(true);
+            mHandler.postDelayed(stepDelayRunnable, STEP_DISPLAY_TIME);
+            countDownTimer.start();
+        }
     }
 
     private void setPlayPauseIcon(boolean playPause){
@@ -166,15 +200,22 @@ public class TrainingActivity extends Activity {
         }
     }
 
+    private void startTestActivity(){
+        Log.d("Training: ", "Starting test activity");
+    }
+
     private Runnable stepDelayRunnable = new Runnable() {
         public void run() {
-            if(play){
-                if(foodItem.getCurrentStep() != foodItem.getNumberOfSteps()){
+            if(play && currentTime <= 1) {
+                if (!foodItem.isLastStep()) {
                     nextStep();
-                    mHandler.postDelayed(stepDelayRunnable, STEP_DISPLAY_TIME);
-                    countDownTimer.start();
+                } else {
+                    nextStep();
+                    timerTextView.setText("");
+                    playPauseImageView.setVisibility(View.INVISIBLE);
                 }
             }
         }
     };
+
 }

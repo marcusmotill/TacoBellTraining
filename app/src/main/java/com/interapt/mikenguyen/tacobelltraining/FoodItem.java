@@ -10,6 +10,7 @@ public class FoodItem {
     private String foodItemName;
     private String[] stepImageArray;
     private String[] stepDescriptionArray;
+    private boolean finishTraining;
 
 //    public FoodItem(int idNumber, int numberOfSteps, String foodItemName, String[] stepImageArray, String[] stepDescriptionArray) {
 //        this.idNumber = idNumber;
@@ -26,6 +27,7 @@ public class FoodItem {
         this.numberOfSteps = numberOfStep;
         this.stepImageArray = getStepImageArray(foodItemNumber, numberOfStep);
         this.currentStep = 1;
+        finishTraining = false;
     }
 
     public void setCurrentStep(int step) {
@@ -49,7 +51,11 @@ public class FoodItem {
     }
 
     public String getCurrentStepImage(){
-        return this.stepImageArray[this.currentStep - 1];
+        if(!finishTraining){
+            return this.stepImageArray[this.currentStep - 1];
+        } else{
+            return "training_complete";
+        }
     }
 
     public String[] getStepImageArray(){
@@ -60,22 +66,24 @@ public class FoodItem {
         return this.stepDescriptionArray;
     }
 
-    public Boolean nextStep() {
-        Boolean success = false;
-        if(this.currentStep != this.numberOfSteps){
+    public void nextStep() {
+        if(!isLastStep()){
             this.currentStep++;
-            success = true;
+        }else {
+            finishTraining = true;
         }
-        return success;
     }
 
-    public Boolean previousStep() {
-        Boolean success = false;
-        if(this.currentStep != 1){
-            this.currentStep--;
-            success = true;
+    public boolean previousStep() {
+        boolean goBackToSubMenu = false;
+        if(!finishTraining){
+            if(this.currentStep > 1){
+                this.currentStep--;
+            } else{
+                goBackToSubMenu = true;
+            }
         }
-        return success;
+        return goBackToSubMenu;
     }
 
     public static String getFoodItemName(int foodItemNumber) {
@@ -142,4 +150,22 @@ public class FoodItem {
         }
         return stepImageArray;
     }
+
+    public boolean isFinishTraining(){
+        return finishTraining;
+    }
+
+    public boolean isLastStep(){
+        boolean endOfStep = false;
+        if (currentStep == numberOfSteps){
+            endOfStep = true;
+        }
+        return endOfStep;
+    }
+
+    public void setFinishTraining(boolean finishTraining){
+        this.finishTraining = finishTraining;
+    }
+
+
 }

@@ -24,6 +24,7 @@ class  SpeechListener implements RecognitionListener
     private int noSpeechInputTimeOut;
     private MainMenuActivity mainMenuActivityActivity;
     private SubMenuActivity subMenuActivity;
+    private String parentActivityName;
 
     public SpeechListener(MainMenuActivity mainMenuActivity, Context context, SpeechRecognizer speechRecognizer, Intent intent)
     {
@@ -32,6 +33,7 @@ class  SpeechListener implements RecognitionListener
         this.speechRecognizer =speechRecognizer;
         this.speechRecognizerIntent = intent;
         noSpeechInputTimeOut = 0;
+        parentActivityName = "MainMenuActivity";
         initMicIcon();
     }
 
@@ -42,6 +44,7 @@ class  SpeechListener implements RecognitionListener
         this.speechRecognizer =speechRecognizer;
         this.speechRecognizerIntent = intent;
         noSpeechInputTimeOut = 0;
+        parentActivityName = "SubMenuActivity";
         initMicIcon();
     }
     public void onReadyForSpeech(Bundle params)
@@ -89,7 +92,6 @@ class  SpeechListener implements RecognitionListener
                     noSpeechInputTimeOut++;
                     restartSpeechRecognition();
                 } else {
-                    playPrompt();
                     restartSpeechRecognition();
                     noSpeechInputTimeOut = 0;
                 }
@@ -137,15 +139,11 @@ class  SpeechListener implements RecognitionListener
     }
 
     private void setMicrophoneIcon(Drawable micIcon){
-        if(mainMenuActivityActivity != null){
+        if(parentActivityName == "MainMenuActivity"){
             mainMenuActivityActivity.setMicImageView(micIcon);
         } else {
-            //subMenuActivity.setMicImageView(micIcon);
+            subMenuActivity.setMicImageView(micIcon);
         }
-    }
-
-    private void playPrompt(){
-        Log.d("Speech listener", "No speech input!");
     }
 
     private void restartSpeechRecognition(){
@@ -154,66 +152,86 @@ class  SpeechListener implements RecognitionListener
     }
 
     private void showLoadingAnimation(){
-        if(mainMenuActivityActivity != null) {
+        if(parentActivityName == "MainMenuActivity") {
             mainMenuActivityActivity.showLoadingAnimation();
         } else {
-            //subMenuActivity.showLoadingAnimation();
+            subMenuActivity.showLoadingAnimation();
         }
     }
 
     private void hideLoadingAnimation(){
-        if(mainMenuActivityActivity != null) {
+        if(parentActivityName == "MainMenuActivity") {
             mainMenuActivityActivity.hideLoadingAnimation();
         } else {
-            //subMenuActivity.hideLoadingAnimation();
+            subMenuActivity.hideLoadingAnimation();
         }
     }
 
     private void setPartialSpeechResult(String partialResult) {
-        if(mainMenuActivityActivity != null) {
+        if(parentActivityName == "MainMenuActivity") {
             mainMenuActivityActivity.setPartialSpeechResult(partialResult);
         } else {
-            //subMenuActivity.setPartialSpeechResult(partialResult);
+            subMenuActivity.setPartialSpeechResult(partialResult);
         }
     }
 
     private void parseSpeechResult(String speechResult){
-        switch (speechResult) {
-            case "number one":case "number 1":case "1":
-                selectMenuItem(1);
-                break;
-            case "number two":case "number 2":case "2":
-                selectMenuItem(2);
-                break;
-            case "number three":case "number 3":case "3":
-                selectMenuItem(3);
-                break;
-            case "number four":case "number 4":case "4":
-                selectMenuItem(4);
-                break;
-            case "number five":case "number 5":case "5":
-                selectMenuItem(5);
-                break;
-            default:
-                //wrong speech input, play shake animation
-                showShakeAnimation();
-                break;
+        if(parentActivityName == "MainMenuActivity"){
+            switch (speechResult) {
+                case "number one":case "number 1":case "1":case "one":case "triple steak stack":
+                    selectMenuItem(1);
+                    break;
+                case "number two":case "number 2":case "2":case "chicken triple steak stack":
+                    selectMenuItem(2);
+                    break;
+                case "number three":case "number 3":case "3":case "Cinnabon coffee":case "cinnabon coffee":
+                    selectMenuItem(3);
+                    break;
+                case "number four":case "number 4":case "4":case "iced coffee":
+                    selectMenuItem(4);
+                    break;
+                case "number five":case "number 5":case "5":case "cheesy burrito":
+                    selectMenuItem(5);
+                    break;
+                default:
+                    //wrong speech input, play shake animation
+                    showShakeAnimation();
+                    break;
+            }
+        } else {
+            switch (speechResult) {
+                case "number one":case "number 1":case "1":case "training":
+                    selectMenuItem(1);
+                    break;
+                case "number two":case "number 2":case "2":case "test":
+                    selectMenuItem(2);
+                    break;
+                case "number three":case "number 3":case "3":case "back to main menu":
+                    selectMenuItem(3);
+                    break;
+                default:
+                    //wrong speech input, play shake animation
+                    showShakeAnimation();
+                    break;
+            }
         }
+
     }
 
     private void selectMenuItem(int menuNumber){
-        if(mainMenuActivityActivity != null) {
+        if(parentActivityName == "MainMenuActivity") {
             mainMenuActivityActivity.startSubMenuActivity(menuNumber);
         } else {
-            //subMenuActivity.startSubMenuActivity(menuNumber);
+            subMenuActivity.selectMenuItem(menuNumber);
         }
     }
 
     private void showShakeAnimation(){
-        if(mainMenuActivityActivity != null) {
+        //play disallowed sound for now
+        if(parentActivityName == "MainMenuActivity") {
             mainMenuActivityActivity.playDisallowedSound();
         } else {
-            //subMenuActivity.playDisallowedSound();
+            subMenuActivity.playDisallowedSound();
         }
     }
 }

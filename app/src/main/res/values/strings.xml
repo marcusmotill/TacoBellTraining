@@ -9,5 +9,6 @@
     <string name="title_activity_sub_menu">SubMenuActivity</string>
     <string name="title_activity_training">TrainingActivity</string>
     <string name="title_activity_test">TestActivity</string>
+    <string name="title_activity_get_id">GetIdActivity</string>
 
 </resources>

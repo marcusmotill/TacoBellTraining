@@ -19,9 +19,6 @@ import android.widget.TextView;
 import com.google.android.glass.media.Sounds;
 import com.google.android.glass.view.WindowUtils;
 
-import java.util.List;
-
-
 public class MainMenuActivity extends Activity {
 
     private static final int SPEECH_REQUEST = 0;
@@ -38,9 +35,9 @@ public class MainMenuActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main_menu);
-        micImageView = (ImageView) findViewById(R.id.micImageView);
-        loadingImageView = (ImageView) findViewById(R.id.loadingImageView);
-        partialSpeechResult = (TextView) findViewById(R.id.speech_textview);
+        micImageView = (ImageView) findViewById(R.id.micImageView1);
+        loadingImageView = (ImageView) findViewById(R.id.loadingImageView1);
+        partialSpeechResult = (TextView) findViewById(R.id.speech_textview1);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         initLoadingAnimation();
         initSpeechRecognition();
@@ -55,6 +52,7 @@ public class MainMenuActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
+        initSpeechRecognition();
         speechRecognizer.startListening(speechRecognizerIntent);
     }
 
@@ -119,31 +117,18 @@ public class MainMenuActivity extends Activity {
     }
 
     public void startSubMenuActivity(int menuItemNumber){
-        audioManager.playSoundEffect(Sounds.SUCCESS);
+        playSuccessSound();
         Intent myIntent = new Intent(this, SubMenuActivity.class);
         myIntent.putExtra("menuItemNumber", menuItemNumber);
         startActivity(myIntent);
     }
 
+    public void playSuccessSound(){
+        audioManager.playSoundEffect(Sounds.SUCCESS);
+    }
+
     public void playDisallowedSound(){
         audioManager.playSoundEffect(Sounds.DISALLOWED);
-    }
-
-    private void displaySpeechRecognizer() {
-        Intent intent = new Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH);
-        startActivityForResult(intent, SPEECH_REQUEST);
-    }
-
-    @Override
-    protected void onActivityResult(int requestCode, int resultCode,
-                                    Intent data) {
-        if (requestCode == SPEECH_REQUEST && resultCode == RESULT_OK) {
-            List<String> results = data.getStringArrayListExtra(
-                    RecognizerIntent.EXTRA_RESULTS);
-            String spokenText = results.get(0);
-            // Do something with spokenText.
-        }
-        super.onActivityResult(requestCode, resultCode, data);
     }
 
     //Speech recognition initialization
