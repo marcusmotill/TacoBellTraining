@@ -24,27 +24,34 @@ class  SpeechListener implements RecognitionListener
     private int noSpeechInputTimeOut;
     private MainMenuActivity mainMenuActivityActivity;
     private SubMenuActivity subMenuActivity;
+    private GetIdActivity getIdActivity;
     private String parentActivityName;
 
     public SpeechListener(MainMenuActivity mainMenuActivity, Context context, SpeechRecognizer speechRecognizer, Intent intent)
     {
+        this(context, speechRecognizer, intent);
         this.mainMenuActivityActivity = mainMenuActivity;
-        this.context =context;
-        this.speechRecognizer =speechRecognizer;
-        this.speechRecognizerIntent = intent;
-        noSpeechInputTimeOut = 0;
         parentActivityName = "MainMenuActivity";
-        initMicIcon();
     }
 
     public SpeechListener(SubMenuActivity subMenuActivity, Context context, SpeechRecognizer speechRecognizer, Intent intent)
     {
+        this(context, speechRecognizer, intent);
         this.subMenuActivity = subMenuActivity;
+        parentActivityName = "SubMenuActivity";
+    }
+
+    public SpeechListener(GetIdActivity getIdActivity, Context context, SpeechRecognizer speechRecognizer, Intent intent){
+        this(context, speechRecognizer, intent);
+        this.getIdActivity = getIdActivity;
+        parentActivityName = "GetIdActivity";
+    }
+
+    public SpeechListener(Context context, SpeechRecognizer speechRecognizer, Intent intent){
         this.context =context;
         this.speechRecognizer =speechRecognizer;
         this.speechRecognizerIntent = intent;
         noSpeechInputTimeOut = 0;
-        parentActivityName = "SubMenuActivity";
         initMicIcon();
     }
     public void onReadyForSpeech(Bundle params)
@@ -139,10 +146,18 @@ class  SpeechListener implements RecognitionListener
     }
 
     private void setMicrophoneIcon(Drawable micIcon){
-        if(parentActivityName == "MainMenuActivity"){
-            mainMenuActivityActivity.setMicImageView(micIcon);
-        } else {
-            subMenuActivity.setMicImageView(micIcon);
+        switch(parentActivityName){
+            case "MainMenuActivity":
+                mainMenuActivityActivity.setMicImageView(micIcon);
+                break;
+            case "SubMenuActivity":
+                subMenuActivity.setMicImageView(micIcon);
+                break;
+            case "GetIdActivity":
+                getIdActivity.setMicImageView(micIcon);
+                break;
+            default:
+                break;
         }
     }
 
@@ -152,86 +167,147 @@ class  SpeechListener implements RecognitionListener
     }
 
     private void showLoadingAnimation(){
-        if(parentActivityName == "MainMenuActivity") {
-            mainMenuActivityActivity.showLoadingAnimation();
-        } else {
-            subMenuActivity.showLoadingAnimation();
+        switch(parentActivityName){
+            case "MainMenuActivity":
+                mainMenuActivityActivity.showLoadingAnimation();
+                break;
+            case "SubMenuActivity":
+                subMenuActivity.showLoadingAnimation();
+                break;
+            case "GetIdActivity":
+                getIdActivity.showLoadingAnimation();
+                break;
+            default:
+                break;
         }
     }
 
     private void hideLoadingAnimation(){
-        if(parentActivityName == "MainMenuActivity") {
-            mainMenuActivityActivity.hideLoadingAnimation();
-        } else {
-            subMenuActivity.hideLoadingAnimation();
+        switch(parentActivityName){
+            case "MainMenuActivity":
+                mainMenuActivityActivity.hideLoadingAnimation();
+                break;
+            case "SubMenuActivity":
+                subMenuActivity.hideLoadingAnimation();
+                break;
+            case "GetIdActivity":
+                getIdActivity.hideLoadingAnimation();
+                break;
+            default:
+                break;
         }
     }
 
     private void setPartialSpeechResult(String partialResult) {
-        if(parentActivityName == "MainMenuActivity") {
-            mainMenuActivityActivity.setPartialSpeechResult(partialResult);
-        } else {
-            subMenuActivity.setPartialSpeechResult(partialResult);
+        switch(parentActivityName){
+            case "MainMenuActivity":
+                mainMenuActivityActivity.setPartialSpeechResult(partialResult);
+                break;
+            case "SubMenuActivity":
+                subMenuActivity.setPartialSpeechResult(partialResult);
+                break;
+            case "GetIdActivity":
+                break;
+            default:
+                break;
         }
     }
 
     private void parseSpeechResult(String speechResult){
-        if(parentActivityName == "MainMenuActivity"){
-            switch (speechResult) {
-                case "number one":case "number 1":case "1":case "one":case "triple steak stack":
-                    selectMenuItem(1);
-                    break;
-                case "number two":case "number 2":case "2":case "chicken triple steak stack":
-                    selectMenuItem(2);
-                    break;
-                case "number three":case "number 3":case "3":case "Cinnabon coffee":case "cinnabon coffee":
-                    selectMenuItem(3);
-                    break;
-                case "number four":case "number 4":case "4":case "iced coffee":
-                    selectMenuItem(4);
-                    break;
-                case "number five":case "number 5":case "5":case "cheesy burrito":
-                    selectMenuItem(5);
-                    break;
-                default:
-                    //wrong speech input, play shake animation
-                    showShakeAnimation();
-                    break;
-            }
-        } else {
-            switch (speechResult) {
-                case "number one":case "number 1":case "1":case "training":
-                    selectMenuItem(1);
-                    break;
-                case "number two":case "number 2":case "2":case "test":
-                    selectMenuItem(2);
-                    break;
-                case "number three":case "number 3":case "3":case "back to main menu":
-                    selectMenuItem(3);
-                    break;
-                default:
-                    //wrong speech input, play shake animation
-                    showShakeAnimation();
-                    break;
-            }
-        }
+        switch(parentActivityName){
+            case "MainMenuActivity":
+                switch (speechResult) {
+                    case "number one":case "number 1":case "1":case "one":case "triple steak stack":
+                        selectMenuItem(1);
+                        break;
+                    case "number two":case "number 2":case "2":case "two":case "chicken triple steak stack":
+                        selectMenuItem(2);
+                        break;
+                    case "number three":case "number 3":case "3":case "three":case "Cinnabon coffee":case "cinnabon coffee":
+                        selectMenuItem(3);
+                        break;
+                    case "number four":case "number 4":case "4":case "four":case "iced coffee":
+                        selectMenuItem(4);
+                        break;
+                    case "number five":case "number 5":case "5":case "five":case "cheesy burrito":
+                        selectMenuItem(5);
+                        break;
+                    default:
+                        //wrong speech input, play disallowed
+                        playDisallowed();
+                        break;
+                }
+                break;
+            case "SubMenuActivity":
+                switch (speechResult) {
+                    case "number one":case "number 1":case "1":case "one":case "training":
+                        selectMenuItem(1);
+                        break;
+                    case "number two":case "number 2":case "2":case "two":case "test":
+                        selectMenuItem(2);
+                        break;
+                    case "number three":case "number 3":case "3":case "three":case "back to main menu":
+                        selectMenuItem(3);
+                        break;
+                    default:
+                        //wrong speech input, play disallowed
+                        playDisallowed();
+                        break;
+                }
+                break;
+            case "GetIdActivity":
+                if(getIdActivity.isGotUserId()){
+                    switch (speechResult){
+                        case "yes":case "Yes":
+                            selectMenuItem(1);
+                            break;
+                        case "no":case "No":
+                            selectMenuItem(2);
+                            break;
+                        default:
+                            //wrong speech input, play disallowed
+                            playDisallowed();
+                            break;
+                    }
+                } else {
+                    getIdActivity.parseUserId(speechResult);
+                }
 
+                break;
+            default:
+                break;
+        }
     }
 
     private void selectMenuItem(int menuNumber){
-        if(parentActivityName == "MainMenuActivity") {
-            mainMenuActivityActivity.startSubMenuActivity(menuNumber);
-        } else {
-            subMenuActivity.selectMenuItem(menuNumber);
+        switch(parentActivityName){
+            case "MainMenuActivity":
+                mainMenuActivityActivity.startSubMenuActivity(menuNumber);
+                break;
+            case "SubMenuActivity":
+                subMenuActivity.selectMenuItem(menuNumber);
+                break;
+            case "GetIdActivity":
+                getIdActivity.selectMenuItem(menuNumber);
+                break;
+            default:
+                break;
         }
     }
 
-    private void showShakeAnimation(){
-        //play disallowed sound for now
-        if(parentActivityName == "MainMenuActivity") {
-            mainMenuActivityActivity.playDisallowedSound();
-        } else {
-            subMenuActivity.playDisallowedSound();
+    private void playDisallowed(){
+        switch(parentActivityName){
+            case "MainMenuActivity":
+                mainMenuActivityActivity.playDisallowedSound();
+                break;
+            case "SubMenuActivity":
+                subMenuActivity.playDisallowedSound();
+                break;
+            case "GetIdActivity":
+                getIdActivity.playDisallowedSound();
+                break;
+            default:
+                break;
         }
     }
 }

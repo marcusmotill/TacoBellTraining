@@ -133,9 +133,9 @@ public class SubMenuActivity extends Activity {
                 break;
             case 2:
                 playSuccessSound();
-                Intent testIntent = new Intent(this, TestActivity.class);
-                testIntent.putExtra("currentFoodItemNumber", currentFoodItemNumber);
-                startActivity(testIntent);
+                Intent getIdIntent = new Intent(this, GetIdActivity.class);
+                getIdIntent.putExtra("currentFoodItemNumber", currentFoodItemNumber);
+                startActivity(getIdIntent);
                 break;
             case 3:
                 playSuccessSound();

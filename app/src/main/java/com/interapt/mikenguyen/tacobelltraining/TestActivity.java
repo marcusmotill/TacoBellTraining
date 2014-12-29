@@ -1,16 +1,26 @@
 package com.interapt.mikenguyen.tacobelltraining;
 
 import android.app.Activity;
+import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
 
 public class TestActivity extends Activity {
 
+    private int currentFoodItemNumber = 0;
+    private String employeeId = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Intent mIntent = getIntent();
+        currentFoodItemNumber = mIntent.getIntExtra("currentFoodItemNumber", 0);
+        employeeId = mIntent.getStringExtra("employeeId");
+        Log.d("Test Activity:", employeeId);
+        Log.d("Test Activity:", String.valueOf(currentFoodItemNumber));
         setContentView(R.layout.activity_test);
     }
 

@@ -4,9 +4,71 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin"
+    android:background="@color/black"
+    android:keepScreenOn="true"
     tools:context="com.interapt.mikenguyen.tacobelltraining.GetIdActivity">
 
-    <TextView android:text="@string/hello_world" android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+    <TextView
+        android:id="@+id/prompt_textview"
+        android:text="Say your Taco Bell ID"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-thin"
+        android:textSize="50px"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"/>
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/micImageView3"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+
+    <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/loadingImageView3"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true"
+        android:visibility="invisible"
+        android:background="@drawable/ic_loading_circle" />
+
+    <TextView
+        android:id="@+id/employee_id_textview"
+        android:text=""
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-thin"
+        android:textSize="50px"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginBottom="30dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Say &quot;Yes&quot; to confirm"
+        android:visibility="invisible"
+        android:id="@+id/yes_textview"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginStart="10dp"
+        android:fontFamily="sans-serif-light"
+        android:textColor="#99cc33" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="Say &quot;No&quot; to retry"
+        android:visibility="invisible"
+        android:id="@+id/no_texview"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="10dp"
+        android:fontFamily="sans-serif-light"
+        android:textColor="#cc3333" />
 
 </RelativeLayout>

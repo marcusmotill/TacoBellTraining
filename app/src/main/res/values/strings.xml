@@ -3,12 +3,12 @@
 
     <string name="app_name">Taco Bell Training</string>
     <string name="title_activity_main">Taco Bell Training</string>
-    <string name="hello_world">Hello world!</string>
     <string name="title_activity_main_menu">MainMenuActivity</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_sub_menu">SubMenuActivity</string>
     <string name="title_activity_training">TrainingActivity</string>
     <string name="title_activity_test">TestActivity</string>
     <string name="title_activity_get_id">GetIdActivity</string>
+    <color name="black">#000000</color>
 
 </resources>

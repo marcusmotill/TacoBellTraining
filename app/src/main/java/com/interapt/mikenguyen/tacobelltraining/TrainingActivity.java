@@ -143,7 +143,7 @@ public class TrainingActivity extends Activity {
             foodItem.nextStep();
             displayStepImage();
         } else {
-            startTestActivity();
+            starGetIdActivity();
         }
     }
 
@@ -200,8 +200,11 @@ public class TrainingActivity extends Activity {
         }
     }
 
-    private void startTestActivity(){
-        Log.d("Training: ", "Starting test activity");
+    private void starGetIdActivity(){
+        Intent getIdIntent = new Intent(this, GetIdActivity.class);
+        getIdIntent.putExtra("currentFoodItemNumber", currentFoodItemNumber);
+        startActivity(getIdIntent);
+        Log.d("Training: ", "Starting get id activity");
     }
 
     private Runnable stepDelayRunnable = new Runnable() {
