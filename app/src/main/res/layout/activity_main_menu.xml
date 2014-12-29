@@ -14,6 +14,7 @@
         android:layout_alignParentStart="true"
         android:layout_marginStart="70px"
         android:layout_marginTop="100px"/>
+
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -32,7 +33,7 @@
         android:maxLength="14"
         android:id="@+id/speech_textview1"
         android:fontFamily="sans-serif-light"
-        android:textColor="#9918b902"
+        android:textColor="#5B5A5A"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="130px"
@@ -41,22 +42,34 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:textAppearance="?android:attr/textAppearanceLarge"
         android:fontFamily="sans-serif-light"
-        android:textColor="#ff000000"
-        android:text="Say &quot;number&quot;,\nthen say a menu\nitem number"
-        android:id="@+id/hint_textview1"
-        android:layout_alignParentBottom="true"
+        android:textColor="#16b902"
+        android:text="Speak Now"
+        android:id="@+id/mic_prompt_textview1"
         android:layout_alignParentStart="true"
-        android:layout_marginBottom="20px"
-        android:layout_marginStart="20px"/>
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="40dp"
+        android:layout_marginStart="25dp"/>
+
+    <!--<TextView-->
+        <!--android:layout_width="wrap_content"-->
+        <!--android:layout_height="wrap_content"-->
+        <!--android:textAppearance="?android:attr/textAppearanceSmall"-->
+        <!--android:fontFamily="sans-serif-light"-->
+        <!--android:textColor="#ffffff"-->
+        <!--android:text="Say &quot;number&quot;, then say a menu number"-->
+        <!--android:id="@+id/hint_textview1"-->
+        <!--android:layout_alignParentBottom="true"-->
+        <!--android:layout_alignParentStart="true"-->
+        <!--android:layout_marginStart="170dp"/>-->
 
     <!--Menu items-->
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text="Pick a food item to start:"
+        android:text="Say a number or food name:"
         android:id="@+id/main_menu_title"
         android:fontFamily="sans-serif-light"
         android:layout_alignParentTop="true"

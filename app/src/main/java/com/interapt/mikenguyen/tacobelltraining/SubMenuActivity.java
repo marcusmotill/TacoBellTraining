@@ -3,6 +3,7 @@ package com.interapt.mikenguyen.tacobelltraining;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
 import android.media.AudioManager;
 import android.os.Bundle;
@@ -27,6 +28,7 @@ public class SubMenuActivity extends Activity {
     private static ImageView micImageView;
     private static ImageView loadingImageView;
     private static TextView subMenuTitleTextView;
+    private static TextView micPromptTextView;
     private static RotateAnimation rotateAnimation;
     private static TextView partialSpeechResult;
     private static AudioManager audioManager;
@@ -42,6 +44,7 @@ public class SubMenuActivity extends Activity {
         micImageView = (ImageView) findViewById(R.id.micImageView2);
         loadingImageView = (ImageView) findViewById(R.id.loadingImageView2);
         partialSpeechResult = (TextView) findViewById(R.id.speech_textview2);
+        micPromptTextView = (TextView) findViewById(R.id.mic_prompt_textview2);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         initLoadingAnimation();
         initSpeechRecognition();
@@ -153,6 +156,23 @@ public class SubMenuActivity extends Activity {
 
     public void playDisallowedSound(){
         audioManager.playSoundEffect(Sounds.DISALLOWED);
+    }
+
+    public void setMicPromptMessage(String message){
+        micPromptTextView.setText(message);
+        switch(message){
+            case "Speak Now":
+                micPromptTextView.setTextColor(Color.parseColor("#16b902"));
+                break;
+            case "Listening":
+                micPromptTextView.setTextColor(Color.parseColor("#cc3333"));
+                break;
+            case "Processing":
+                micPromptTextView.setTextColor(Color.parseColor("#5B5A5A"));
+                break;
+            default:
+                break;
+        }
     }
 
     //Speech recognition initialization

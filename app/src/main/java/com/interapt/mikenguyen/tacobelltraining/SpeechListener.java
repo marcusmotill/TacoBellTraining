@@ -26,6 +26,9 @@ class  SpeechListener implements RecognitionListener
     private SubMenuActivity subMenuActivity;
     private GetIdActivity getIdActivity;
     private String parentActivityName;
+    private final String MIC_PROMPT_READY = "Speak Now";
+    private final String MIC_PROMPT_LISTENING = "Listening";
+    private final String MIC_PROMPT_PROCESSING = "Processing";
 
     public SpeechListener(MainMenuActivity mainMenuActivity, Context context, SpeechRecognizer speechRecognizer, Intent intent)
     {
@@ -56,6 +59,7 @@ class  SpeechListener implements RecognitionListener
     }
     public void onReadyForSpeech(Bundle params)
     {
+        setMicPromptMessage(MIC_PROMPT_READY);
         setMicrophoneIcon(readyMicrophone);
         hideLoadingAnimation();
         Log.d("Speech Listener", "ready to listen");
@@ -63,6 +67,7 @@ class  SpeechListener implements RecognitionListener
     }
     public void onBeginningOfSpeech()
     {
+        setMicPromptMessage(MIC_PROMPT_LISTENING);
         setMicrophoneIcon(recordingMicrophone);
         Log.d("Speech Listener", "start listening");
         //Log.d(TAG, "onBeginningOfSpeech");
@@ -93,6 +98,7 @@ class  SpeechListener implements RecognitionListener
         switch (error){
             case 1:case 2:
                 setMicrophoneIcon(busyMicrophone);
+                setMicPromptMessage(MIC_PROMPT_PROCESSING);
                 break;
             case 6:
                 if(noSpeechInputTimeOut < 1){
@@ -107,7 +113,8 @@ class  SpeechListener implements RecognitionListener
                 //no matching results
                 break;
             case 8:
-                setMicrophoneIcon(busyMicrophone);
+                setMicPromptMessage(MIC_PROMPT_PROCESSING);
+                setMicrophoneIcon(recordingMicrophone);
                 showLoadingAnimation();
                 break;
             case 3:case 4:case 5:
@@ -306,6 +313,22 @@ class  SpeechListener implements RecognitionListener
             case "GetIdActivity":
                 getIdActivity.playDisallowedSound();
                 break;
+            default:
+                break;
+        }
+    }
+
+    private void setMicPromptMessage(String message){
+        switch(parentActivityName){
+            case "MainMenuActivity":
+                mainMenuActivityActivity.setMicPromptMessage(message);
+                break;
+            case "SubMenuActivity":
+                subMenuActivity.setMicPromptMessage(message);
+                break;
+//            case "GetIdActivity":
+//                getIdActivity.setMicPromptMessage(message);
+//                break;
             default:
                 break;
         }

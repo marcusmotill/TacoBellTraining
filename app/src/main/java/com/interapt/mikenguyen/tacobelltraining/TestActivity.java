@@ -84,6 +84,7 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback {
                 //int imageResource = getResources().getIdentifier("ic_rec", "drawable", getPackageName());
                 //Drawable recordingIcon = getResources().getDrawable(imageResource);
                 //timerImageView.setImageDrawable(recordingIcon);
+                recordingPromptTextView.setText("GO!");
                 startRecording();
             }
         };
@@ -155,6 +156,7 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback {
         releaseMediaRecorder();
         releaseCamera();
         countDownTextView.setVisibility(View.INVISIBLE);
+        showPostRecordingPrompts();
     }
 
     private void releaseMediaRecorder() {
@@ -278,7 +280,11 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback {
         prepContentTextView.setVisibility(View.INVISIBLE);
         prepTitleTextView.setVisibility(View.INVISIBLE);
         recordingPromptTextView.setVisibility(View.VISIBLE);
-        //timerImageView.setVisibility(View.VISIBLE);
+        timerImageView.setVisibility(View.VISIBLE);
         countDownTimer1.start();
+    }
+
+    private void showPostRecordingPrompts(){
+
     }
 }
