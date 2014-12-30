@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 
 repositories {
+    maven { url 'http://maven.onthego.io/' }
     jcenter()
     flatDir {
         dirs 'prebuilt-libs'
@@ -33,4 +34,5 @@ android {
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile 'io.onthego:ari-android:1.2.1'
 }

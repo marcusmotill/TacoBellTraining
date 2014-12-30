@@ -13,11 +13,20 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.glass.view.WindowUtils;
 
+import javax.annotation.Nonnull;
 
-public class TrainingActivity extends Activity {
+import io.onthego.ari.KeyDecodingException;
+import io.onthego.ari.android.ActiveAri;
+import io.onthego.ari.android.Ari;
+import io.onthego.ari.event.HandEvent;
+
+
+public class TrainingActivity extends Activity implements Ari.StartCallback, Ari.ErrorCallback,
+        HandEvent.Listener {
 
     private int currentFoodItemNumber = 0;
     private RelativeLayout trainingLayout;
@@ -25,14 +34,23 @@ public class TrainingActivity extends Activity {
     private TextView timerTextView;
     private CountDownTimer countDownTimer;
     private ImageView playPauseImageView;
-    /** The amount of time to show each step */
+    /**
+     * The amount of time to show each step
+     */
     private static final long STEP_DISPLAY_TIME = 9000;
-    /** Handler used to post a delayed the display of each step */
+    /**
+     * Handler used to post a delayed the display of each step
+     */
     private final Handler mHandler = new Handler();
     //Boolean to play/pause the training
     private boolean play = true;
     //Keep track of time left in the count down timer
     private long currentTime = 0;
+
+    private static final String TAG = "CameraViewActivity";
+
+
+    private ActiveAri mAri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,10 +61,10 @@ public class TrainingActivity extends Activity {
         //init
         timerTextView = (TextView) findViewById(R.id.timer_texview);
         playPauseImageView = (ImageView) findViewById(R.id.play_pause_imageview);
-        countDownTimer =  new CountDownTimer(STEP_DISPLAY_TIME + 1000, 1000) {
+        countDownTimer = new CountDownTimer(STEP_DISPLAY_TIME + 1000, 1000) {
 
             public void onTick(long millisUntilFinished) {
-                if(play){
+                if (play) {
                     currentTime = millisUntilFinished / 1000;
                     timerTextView.setText(currentTime + "S");
                 }
@@ -59,11 +77,37 @@ public class TrainingActivity extends Activity {
         Intent mIntent = getIntent();
         currentFoodItemNumber = mIntent.getIntExtra("currentFoodItemNumber", 0);
         trainingLayout = (RelativeLayout) findViewById(R.id.training_layout);
-        if(currentFoodItemNumber != 0){
+        if (currentFoodItemNumber != 0) {
             initializeFoodItem();
             displayStepImage();
         }
+
+        try {
+            mAri = ActiveAri.getInstance(getString(R.string.ari_license_key), this)
+                    .addListeners(this)
+                    .addErrorCallback(this);
+        } catch (final KeyDecodingException e) {
+            Log.e(TAG, "Failed to init Ari: ", e);
+            finish();
+        }
+
         startTraining();
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        if (mAri != null) {
+            mAri.stop();
+        }
+    }
+
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        mAri.start(this);
     }
 
     @Override
@@ -112,7 +156,7 @@ public class TrainingActivity extends Activity {
         return super.onMenuItemSelected(featureId, item);
     }
 
-    private void initializeFoodItem(){
+    private void initializeFoodItem() {
         foodItem = new FoodItem(currentFoodItemNumber);
     }
 
@@ -122,18 +166,18 @@ public class TrainingActivity extends Activity {
         trainingLayout.setBackground(stepImage);
     }
 
-    private void nextStep(){
+    private void nextStep() {
         foodItem.nextStep();
         displayStepImage();
-        if(!foodItem.isFinishTraining()){
+        if (!foodItem.isFinishTraining()) {
             mHandler.postDelayed(stepDelayRunnable, STEP_DISPLAY_TIME);
             countDownTimer.start();
         }
     }
 
     private void manualNextStep() {
-        if(!foodItem.isFinishTraining()){
-            if(foodItem.isLastStep()){
+        if (!foodItem.isFinishTraining()) {
+            if (foodItem.isLastStep()) {
                 playPauseImageView.setVisibility(View.INVISIBLE);
                 timerTextView.setText("");
             } else {
@@ -147,9 +191,9 @@ public class TrainingActivity extends Activity {
         }
     }
 
-    private void previousStep(){
-        if(!foodItem.previousStep()){
-            if(foodItem.isFinishTraining()){
+    private void previousStep() {
+        if (!foodItem.previousStep()) {
+            if (foodItem.isFinishTraining()) {
                 foodItem.setFinishTraining(false);
                 playPauseImageView.setVisibility(View.VISIBLE);
             }
@@ -159,8 +203,8 @@ public class TrainingActivity extends Activity {
         }
     }
 
-    private void resetTraining(){
-        if(foodItem.isFinishTraining()){
+    private void resetTraining() {
+        if (foodItem.isFinishTraining()) {
             foodItem.setFinishTraining(false);
             playPauseImageView.setVisibility(View.VISIBLE);
         }
@@ -170,14 +214,14 @@ public class TrainingActivity extends Activity {
         startTraining();
     }
 
-    private void pauseTraining(){
+    private void pauseTraining() {
         play = false;
         setPlayPauseIcon(false);
         timerTextView.setText("");
     }
 
-    private void startTraining(){
-        if(!foodItem.isFinishTraining()){
+    private void startTraining() {
+        if (!foodItem.isFinishTraining()) {
             play = true;
             setPlayPauseIcon(true);
             mHandler.postDelayed(stepDelayRunnable, STEP_DISPLAY_TIME);
@@ -185,22 +229,21 @@ public class TrainingActivity extends Activity {
         }
     }
 
-    private void setPlayPauseIcon(boolean playPause){
+    private void setPlayPauseIcon(boolean playPause) {
         //if playPause is true, set play icon & vice versa for pause icon
         int imageResource = 0;
-        if(playPause){
+        if (playPause) {
             imageResource = getResources().getIdentifier("ic_music_play_50", "drawable", getPackageName());
-        }
-        else{
+        } else {
             imageResource = getResources().getIdentifier("ic_music_pause_50", "drawable", getPackageName());
         }
-        if(imageResource != 0){
+        if (imageResource != 0) {
             Drawable playIcon = getResources().getDrawable(imageResource);
             playPauseImageView.setImageDrawable(playIcon);
         }
     }
 
-    private void starGetIdActivity(){
+    private void starGetIdActivity() {
         Intent getIdIntent = new Intent(this, GetIdActivity.class);
         getIdIntent.putExtra("currentFoodItemNumber", currentFoodItemNumber);
         startActivity(getIdIntent);
@@ -209,7 +252,7 @@ public class TrainingActivity extends Activity {
 
     private Runnable stepDelayRunnable = new Runnable() {
         public void run() {
-            if(play && currentTime <= 1) {
+            if (play && currentTime <= 1) {
                 if (!foodItem.isLastStep()) {
                     nextStep();
                 } else {
@@ -220,5 +263,48 @@ public class TrainingActivity extends Activity {
             }
         }
     };
+
+    @Override
+    public void onHandEvent(HandEvent handEvent) {
+        Log.i(TAG, "Ari " + handEvent.type);
+        String eventType = handEvent.type.toString();
+
+        if (eventType.equals("OPEN_HAND")) {
+            if (play)
+                pauseTraining();
+
+        } else if (eventType.equals("CLOSED_HAND")) {
+            if (!play)
+                startTraining();
+
+        } else if (eventType.equals("LEFT_SWIPE")) {
+            nextStep();
+
+        } else if (eventType.equals("RIGHT_SWIPE")) {
+            previousStep();
+        }
+
+    }
+
+    @Override
+    public void onAriStart() {
+        // Enabling and disabling gestures is only available with Indie Developer and
+        // Enterprise licenses.
+        // mAri.disable(HandEvent.Type.values())
+        //    .enable(HandEvent.Type.OPEN_HAND, HandEvent.Type.CLOSED_HAND,
+        //            HandEvent.Type.LEFT_SWIPE, HandEvent.Type.RIGHT_SWIPE,
+        //            HandEvent.Type.UP_SWIPE, HandEvent.Type.DOWN_SWIPE,
+        //            HandEvent.Type.SWIPE_PROGRESS);
+
+
+    }
+
+
+    @Override
+    public void onAriError(@Nonnull final Throwable throwable) {
+        final String msg = "Ari error";
+        Log.e(TAG, msg, throwable);
+
+    }
 
 }

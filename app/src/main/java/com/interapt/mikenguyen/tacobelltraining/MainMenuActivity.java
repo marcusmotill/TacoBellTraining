@@ -9,6 +9,7 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.animation.Animation;
@@ -16,13 +17,25 @@ import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.android.glass.media.Sounds;
 import com.google.android.glass.view.WindowUtils;
 
-public class MainMenuActivity extends Activity {
+import org.w3c.dom.Text;
+
+import javax.annotation.Nonnull;
+
+import io.onthego.ari.KeyDecodingException;
+import io.onthego.ari.android.ActiveAri;
+import io.onthego.ari.android.Ari;
+import io.onthego.ari.event.HandEvent;
+
+public class MainMenuActivity extends Activity implements Ari.StartCallback, Ari.ErrorCallback,
+        HandEvent.Listener {
 
     private static final int SPEECH_REQUEST = 0;
+    private static int highlightCount = 0;
     private static SpeechRecognizer speechRecognizer;
     private static Intent speechRecognizerIntent;
     private static ImageView micImageView;
@@ -30,8 +43,11 @@ public class MainMenuActivity extends Activity {
     private static RotateAnimation rotateAnimation;
     private static TextView partialSpeechResult;
     private static TextView micPromptTextView;
+    private static TextView mainMenu1, mainMenu2, mainMenu3, mainMenu4, mainMenu5;
+    private static TextView[] menuTextViews;
     private static AudioManager audioManager;
-
+    private static final String TAG = "MainMenuActivity";
+    private ActiveAri mAri;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +58,25 @@ public class MainMenuActivity extends Activity {
         partialSpeechResult = (TextView) findViewById(R.id.speech_textview1);
         micPromptTextView = (TextView) findViewById(R.id.mic_prompt_textview1);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
+        mainMenu1 = (TextView) findViewById(R.id.main_menu_item_1);
+        mainMenu2 = (TextView) findViewById(R.id.main_menu_item_2);
+        mainMenu3 = (TextView) findViewById(R.id.main_menu_item_3);
+        mainMenu4 = (TextView) findViewById(R.id.main_menu_item_4);
+        mainMenu5 = (TextView) findViewById(R.id.main_menu_item_5);
+
+        menuTextViews = new TextView[]{mainMenu1, mainMenu2, mainMenu3, mainMenu4, mainMenu5};
+        menuTextViews[highlightCount].setTextColor(getResources().getColor(R.color.yellow));
+
+        try {
+            mAri = ActiveAri.getInstance(getString(R.string.ari_license_key), this)
+                    .addListeners(this)
+                    .addErrorCallback(this);
+        } catch (final KeyDecodingException e) {
+            Log.e(TAG, "Failed to init Ari: ", e);
+            finish();
+        }
+        
         initLoadingAnimation();
         initSpeechRecognition();
     }
@@ -50,6 +85,9 @@ public class MainMenuActivity extends Activity {
     public void onPause() {
         super.onPause();
         speechRecognizer.cancel();
+        if (mAri != null) {
+            mAri.stop();
+        }
     }
 
     @Override
@@ -57,6 +95,7 @@ public class MainMenuActivity extends Activity {
         super.onResume();
         initSpeechRecognition();
         speechRecognizer.startListening(speechRecognizerIntent);
+        mAri.start(this);
     }
 
     @Override
@@ -167,5 +206,60 @@ public class MainMenuActivity extends Activity {
         rotateAnimation.setInterpolator(new LinearInterpolator());
         rotateAnimation.setRepeatCount(Animation.INFINITE);
         rotateAnimation.setDuration(700);
+    }
+
+    @Override
+    public void onHandEvent(HandEvent handEvent) {
+        Log.i(TAG, "Ari " + handEvent.type);
+        String eventType = handEvent.type.toString();
+
+        if (eventType.equals("RIGHT_SWIPE") || eventType.equals("LEFT_SWIPE")) {
+            moveCursor(eventType);
+        } else if (eventType.equals("CLOSED_HAND")) {
+            mAri.stop();
+            startSubMenuActivity(highlightCount + 1);
+        }
+
+    }
+
+    private void moveCursor(String eventType) {
+        menuTextViews[highlightCount].setTextColor(getResources().getColor(R.color.white));
+        if (eventType.equals("RIGHT_SWIPE")) { // move down
+            if (highlightCount != 4) {
+                highlightCount++;
+            } else {
+                highlightCount = 0;
+            }
+        } else if (eventType.equals("LEFT_SWIPE")) { // move up
+            if (highlightCount != 0) {
+                highlightCount--;
+            } else {
+                highlightCount = 4;
+            }
+        }
+        Log.i("Highlight Count", " " + highlightCount);
+        menuTextViews[highlightCount].setTextColor(getResources().getColor(R.color.yellow));
+
+    }
+
+    @Override
+    public void onAriStart() {
+        // Enabling and disabling gestures is only available with Indie Developer and
+        // Enterprise licenses.
+        // mAri.disable(HandEvent.Type.values())
+        //    .enable(HandEvent.Type.OPEN_HAND, HandEvent.Type.CLOSED_HAND,
+        //            HandEvent.Type.LEFT_SWIPE, HandEvent.Type.RIGHT_SWIPE,
+        //            HandEvent.Type.UP_SWIPE, HandEvent.Type.DOWN_SWIPE,
+        //            HandEvent.Type.SWIPE_PROGRESS);
+
+
+    }
+
+
+    @Override
+    public void onAriError(@Nonnull final Throwable throwable) {
+        final String msg = "Ari error";
+        Log.e(TAG, msg, throwable);
+
     }
 }
