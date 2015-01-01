@@ -23,6 +23,7 @@ import io.onthego.ari.KeyDecodingException;
 import io.onthego.ari.android.ActiveAri;
 import io.onthego.ari.android.Ari;
 import io.onthego.ari.event.HandEvent;
+import io.onthego.ari.event.ThumbUpEvent;
 
 
 public class TrainingActivity extends Activity implements Ari.StartCallback, Ari.ErrorCallback,
@@ -270,15 +271,28 @@ public class TrainingActivity extends Activity implements Ari.StartCallback, Ari
         String eventType = handEvent.type.toString();
 
         if (eventType.equals("OPEN_HAND")) {
-            if (play)
-                pauseTraining();
+            if(foodItem.isLastStep()){
+                resetTraining();
+            }else{
+                mAri.stop();
+                finish();
+            }
 
         } else if (eventType.equals("CLOSED_HAND")) {
+            if(foodItem.isLastStep()){
+                starGetIdActivity();
+            }else {
+                if (play)
+                    pauseTraining();
+            }
+
+
+        } else if(eventType.equals("V_SIGN")){
             if (!play)
                 startTraining();
-
-        } else if (eventType.equals("LEFT_SWIPE")) {
-            nextStep();
+        }
+         else if (eventType.equals("LEFT_SWIPE")) {
+            manualNextStep();
 
         } else if (eventType.equals("RIGHT_SWIPE")) {
             previousStep();
@@ -290,11 +304,11 @@ public class TrainingActivity extends Activity implements Ari.StartCallback, Ari
     public void onAriStart() {
         // Enabling and disabling gestures is only available with Indie Developer and
         // Enterprise licenses.
-        // mAri.disable(HandEvent.Type.values())
-        //    .enable(HandEvent.Type.OPEN_HAND, HandEvent.Type.CLOSED_HAND,
-        //            HandEvent.Type.LEFT_SWIPE, HandEvent.Type.RIGHT_SWIPE,
-        //            HandEvent.Type.UP_SWIPE, HandEvent.Type.DOWN_SWIPE,
-        //            HandEvent.Type.SWIPE_PROGRESS);
+         mAri.disable(HandEvent.Type.SWIPE_PROGRESS)
+            .enable(HandEvent.Type.OPEN_HAND, HandEvent.Type.CLOSED_HAND,
+                    HandEvent.Type.LEFT_SWIPE, HandEvent.Type.RIGHT_SWIPE,
+                    HandEvent.Type.UP_SWIPE, HandEvent.Type.DOWN_SWIPE,
+                    HandEvent.Type.V_SIGN);
 
 
     }
@@ -306,5 +320,6 @@ public class TrainingActivity extends Activity implements Ari.StartCallback, Ari
         Log.e(TAG, msg, throwable);
 
     }
+
 
 }

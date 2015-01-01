@@ -27,6 +27,7 @@ import io.onthego.ari.KeyDecodingException;
 import io.onthego.ari.android.ActiveAri;
 import io.onthego.ari.android.Ari;
 import io.onthego.ari.event.HandEvent;
+import io.onthego.ari.event.ThumbUpEvent;
 
 public class SubMenuActivity extends Activity implements Ari.StartCallback, Ari.ErrorCallback,
         HandEvent.Listener {
@@ -260,24 +261,27 @@ public class SubMenuActivity extends Activity implements Ari.StartCallback, Ari.
         Log.i(TAG, "Ari " + handEvent.type);
         String eventType = handEvent.type.toString();
 
-        if (eventType.equals("RIGHT_SWIPE") || eventType.equals("LEFT_SWIPE")) {
+        if (eventType.equals("DOWN_SWIPE") || eventType.equals("UP_SWIPE")) {
             moveCursor(eventType);
-        } else if (eventType.equals("CLOSED_HAND")) {
-            mAri.stop();
+        }else if(eventType.equals("CLOSED_HAND")){
+            mAri.stop(); //to eliminate selecting twice
             selectMenuItem(highlightCount + 1);
+        }else if(eventType.equals("OPEN_HAND")){
+            mAri.stop();
+            selectMenuItem(3);
         }
 
     }
 
     private void moveCursor(String eventType) {
         menuTextViews[highlightCount].setTextColor(getResources().getColor(R.color.white));
-        if (eventType.equals("RIGHT_SWIPE")) { // move down
+        if (eventType.equals("DOWN_SWIPE")) { // move down
             if (highlightCount != 2) {
                 highlightCount++;
             } else {
                 highlightCount = 0;
             }
-        } else if (eventType.equals("LEFT_SWIPE")) { // move up
+        } else if (eventType.equals("UP_SWIPE")) { // move up
             if (highlightCount != 0) {
                 highlightCount--;
             } else {
@@ -293,11 +297,11 @@ public class SubMenuActivity extends Activity implements Ari.StartCallback, Ari.
     public void onAriStart() {
         // Enabling and disabling gestures is only available with Indie Developer and
         // Enterprise licenses.
-        // mAri.disable(HandEvent.Type.values())
-        //    .enable(HandEvent.Type.OPEN_HAND, HandEvent.Type.CLOSED_HAND,
-        //            HandEvent.Type.LEFT_SWIPE, HandEvent.Type.RIGHT_SWIPE,
-        //            HandEvent.Type.UP_SWIPE, HandEvent.Type.DOWN_SWIPE,
-        //            HandEvent.Type.SWIPE_PROGRESS);
+         mAri.disable(HandEvent.Type.SWIPE_PROGRESS)
+            .enable(HandEvent.Type.OPEN_HAND, HandEvent.Type.CLOSED_HAND,
+                    HandEvent.Type.LEFT_SWIPE, HandEvent.Type.RIGHT_SWIPE,
+                    HandEvent.Type.UP_SWIPE, HandEvent.Type.DOWN_SWIPE,
+                    HandEvent.Type.THUMB_UP);
     }
 
 
@@ -307,4 +311,6 @@ public class SubMenuActivity extends Activity implements Ari.StartCallback, Ari.
         Log.e(TAG, msg, throwable);
 
     }
+
+
 }

@@ -30,9 +30,10 @@ import io.onthego.ari.KeyDecodingException;
 import io.onthego.ari.android.ActiveAri;
 import io.onthego.ari.android.Ari;
 import io.onthego.ari.event.HandEvent;
+import io.onthego.ari.event.ThumbUpEvent;
 
 public class MainMenuActivity extends Activity implements Ari.StartCallback, Ari.ErrorCallback,
-        HandEvent.Listener {
+        HandEvent.Listener{
 
     private static final int SPEECH_REQUEST = 0;
     private static int highlightCount = 0;
@@ -213,9 +214,9 @@ public class MainMenuActivity extends Activity implements Ari.StartCallback, Ari
         Log.i(TAG, "Ari " + handEvent.type);
         String eventType = handEvent.type.toString();
 
-        if (eventType.equals("RIGHT_SWIPE") || eventType.equals("LEFT_SWIPE")) {
+        if (eventType.equals("DOWN_SWIPE") || eventType.equals("UP_SWIPE")) {
             moveCursor(eventType);
-        } else if (eventType.equals("CLOSED_HAND")) {
+        } else if(eventType.equals("CLOSED_HAND")){
             mAri.stop();
             startSubMenuActivity(highlightCount + 1);
         }
@@ -224,13 +225,13 @@ public class MainMenuActivity extends Activity implements Ari.StartCallback, Ari
 
     private void moveCursor(String eventType) {
         menuTextViews[highlightCount].setTextColor(getResources().getColor(R.color.white));
-        if (eventType.equals("RIGHT_SWIPE")) { // move down
+        if (eventType.equals("DOWN_SWIPE")) { // move down
             if (highlightCount != 4) {
                 highlightCount++;
             } else {
                 highlightCount = 0;
             }
-        } else if (eventType.equals("LEFT_SWIPE")) { // move up
+        } else if (eventType.equals("UP_SWIPE")) { // move up
             if (highlightCount != 0) {
                 highlightCount--;
             } else {
@@ -238,6 +239,7 @@ public class MainMenuActivity extends Activity implements Ari.StartCallback, Ari
             }
         }
         Log.i("Highlight Count", " " + highlightCount);
+
         menuTextViews[highlightCount].setTextColor(getResources().getColor(R.color.yellow));
 
     }
@@ -246,11 +248,11 @@ public class MainMenuActivity extends Activity implements Ari.StartCallback, Ari
     public void onAriStart() {
         // Enabling and disabling gestures is only available with Indie Developer and
         // Enterprise licenses.
-        // mAri.disable(HandEvent.Type.values())
-        //    .enable(HandEvent.Type.OPEN_HAND, HandEvent.Type.CLOSED_HAND,
-        //            HandEvent.Type.LEFT_SWIPE, HandEvent.Type.RIGHT_SWIPE,
-        //            HandEvent.Type.UP_SWIPE, HandEvent.Type.DOWN_SWIPE,
-        //            HandEvent.Type.SWIPE_PROGRESS);
+         mAri.disable(HandEvent.Type.SWIPE_PROGRESS)
+                 .enable(HandEvent.Type.OPEN_HAND, HandEvent.Type.CLOSED_HAND,
+                    HandEvent.Type.LEFT_SWIPE, HandEvent.Type.RIGHT_SWIPE,
+                    HandEvent.Type.UP_SWIPE, HandEvent.Type.DOWN_SWIPE,
+                    HandEvent.Type.THUMB_UP);
 
 
     }
@@ -262,4 +264,6 @@ public class MainMenuActivity extends Activity implements Ari.StartCallback, Ari
         Log.e(TAG, msg, throwable);
 
     }
+
+
 }
