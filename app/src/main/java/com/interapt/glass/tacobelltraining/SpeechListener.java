@@ -1,4 +1,4 @@
-package com.interapt.mikenguyen.tacobelltraining;
+package com.interapt.glass.tacobelltraining;
 
 import android.content.Context;
 import android.content.Intent;

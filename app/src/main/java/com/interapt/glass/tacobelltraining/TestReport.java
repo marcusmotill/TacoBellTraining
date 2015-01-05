@@ -1,4 +1,4 @@
-package com.interapt.mikenguyen.tacobelltraining;
+package com.interapt.glass.tacobelltraining;
 
 /**
  * Created by mikenguyen on 12/21/14.
@@ -22,5 +22,26 @@ public class TestReport {
 
     public void setTestVideo(String testVideo) {
         this.testVideo = testVideo;
+    }
+
+    public String getTestVideo(){
+        return testVideo;
+    }
+
+    public String getEmployeeId(){
+        return employeeId;
+    }
+
+    public String getFoodItemName(){
+        return foodItemName;
+    }
+
+    public int getNumberOfTrials(){
+        return numberOfTrials;
+    }
+
+    public String generateTestReportContent(){
+        return "Taco Bell Training Test Result\nEmployee Id: " + employeeId
+                + "\nFood Item: " + foodItemName + "\nNumber of trials: " + String.valueOf(numberOfTrials);
     }
 }

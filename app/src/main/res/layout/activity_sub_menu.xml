@@ -4,7 +4,7 @@
     android:layout_height="match_parent"
     android:keepScreenOn="true"
     android:background="@drawable/sub_menu"
-    tools:context="com.interapt.mikenguyen.tacobelltraining.SubMenuActivity">
+    tools:context="com.interapt.glass.tacobelltraining.SubMenuActivity">
 
     <ImageView
         android:layout_width="wrap_content"

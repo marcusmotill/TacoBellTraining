@@ -1,4 +1,4 @@
-package com.interapt.mikenguyen.tacobelltraining;
+package com.interapt.glass.tacobelltraining;
 
 /**
  * Created by mikenguyen on 12/21/14.

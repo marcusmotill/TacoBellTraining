@@ -1,4 +1,4 @@
-package com.interapt.mikenguyen.tacobelltraining;
+package com.interapt.glass.tacobelltraining;
 
 import android.app.Activity;
 import android.content.Context;
@@ -151,7 +151,7 @@ public class GetIdActivity extends Activity {
             gotUserId = true;
         } else {
             playDisallowedSound();
-            employeeIdTextView.setText(noSpaceString.toUpperCase());
+            //employeeIdTextView.setText(noSpaceString.toUpperCase());
             promptTextView.setText("The ID format is incorrect, try again");
         }
     }

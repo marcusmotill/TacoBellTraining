@@ -1,4 +1,4 @@
-package com.interapt.mikenguyen.tacobelltraining;
+package com.interapt.glass.tacobelltraining;
 
 import android.app.Activity;
 import android.content.Context;
@@ -9,6 +9,7 @@ import android.media.AudioManager;
 import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.animation.Animation;
@@ -20,30 +21,44 @@ import android.widget.TextView;
 import com.google.android.glass.media.Sounds;
 import com.google.android.glass.view.WindowUtils;
 
-public class MainMenuActivity extends Activity {
-
+public class SubMenuActivity extends Activity {
     private static final int SPEECH_REQUEST = 0;
     private static SpeechRecognizer speechRecognizer;
     private static Intent speechRecognizerIntent;
     private static ImageView micImageView;
     private static ImageView loadingImageView;
+    private static TextView subMenuTitleTextView;
+    private static TextView micPromptTextView;
     private static RotateAnimation rotateAnimation;
     private static TextView partialSpeechResult;
-    private static TextView micPromptTextView;
     private static AudioManager audioManager;
-
+    private  static int currentFoodItemNumber = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main_menu);
-        micImageView = (ImageView) findViewById(R.id.micImageView1);
-        loadingImageView = (ImageView) findViewById(R.id.loadingImageView1);
-        partialSpeechResult = (TextView) findViewById(R.id.speech_textview1);
-        micPromptTextView = (TextView) findViewById(R.id.mic_prompt_textview1);
+        Intent mIntent = getIntent();
+        currentFoodItemNumber = mIntent.getIntExtra("menuItemNumber", 0);
+        Log.d("menu item number: ", String.valueOf(currentFoodItemNumber));
+        setContentView(R.layout.activity_sub_menu);
+        micImageView = (ImageView) findViewById(R.id.micImageView2);
+        loadingImageView = (ImageView) findViewById(R.id.loadingImageView2);
+        partialSpeechResult = (TextView) findViewById(R.id.speech_textview2);
+        micPromptTextView = (TextView) findViewById(R.id.mic_prompt_textview2);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         initLoadingAnimation();
         initSpeechRecognition();
+        initSubMenuTitleTextView();
+    }
+
+    @Override
+    public boolean onCreatePanelMenu(int featureId, Menu menu) {
+        if (featureId == WindowUtils.FEATURE_VOICE_COMMANDS) {
+            getMenuInflater().inflate(R.menu.menu_sub_menu, menu);
+            return true;
+        }
+        // Pass through to super to setup touch menu.
+        return super.onCreatePanelMenu(featureId, menu);
     }
 
     @Override
@@ -55,23 +70,12 @@ public class MainMenuActivity extends Activity {
     @Override
     public void onResume() {
         super.onResume();
-        initSpeechRecognition();
         speechRecognizer.startListening(speechRecognizerIntent);
     }
 
     @Override
-    public boolean onCreatePanelMenu(int featureId, Menu menu) {
-        if (featureId == WindowUtils.FEATURE_VOICE_COMMANDS) {
-            getMenuInflater().inflate(R.menu.menu_main_menu, menu);
-            return true;
-        }
-        // Pass through to super to setup touch menu.
-        return super.onCreatePanelMenu(featureId, menu);
-    }
-
-    @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main_menu, menu);
+        getMenuInflater().inflate(R.menu.menu_sub_menu, menu);
         return true;
     }
 
@@ -80,25 +84,28 @@ public class MainMenuActivity extends Activity {
         if (featureId == WindowUtils.FEATURE_VOICE_COMMANDS) {
             switch (item.getItemId()) {
                 case R.id.one_menu_item:
-                    startSubMenuActivity(1);
+                    Intent trainingIntent = new Intent(this, TrainingActivity.class);
+                    if(currentFoodItemNumber != 0) {
+                        trainingIntent.putExtra("currentFoodItemNumber", currentFoodItemNumber);
+                        startActivity(trainingIntent);
+                    }
                     break;
                 case R.id.two_menu_item:
-                    startSubMenuActivity(2);
+                    Intent testIntent = new Intent(this, TestActivity.class);
+                    if(currentFoodItemNumber != 0) {
+                        testIntent.putExtra("currentFoodItemNumber", currentFoodItemNumber);
+                        startActivity(testIntent);
+                    }
                     break;
                 case R.id.three_menu_item:
-                    startSubMenuActivity(3);
-                    break;
-                case R.id.four_menu_item:
-                    startSubMenuActivity(4);
-                    break;
-                case R.id.five_menu_item:
-                    startSubMenuActivity(5);
+                    finish();
                     break;
                 default:
                     return true;
             }
             return true;
         }
+        // Good practice to pass through to super if not handled
         return super.onMenuItemSelected(featureId, item);
     }
 
@@ -119,11 +126,28 @@ public class MainMenuActivity extends Activity {
         partialSpeechResult.setText(partialResult);
     }
 
-    public void startSubMenuActivity(int menuItemNumber){
-        playSuccessSound();
-        Intent myIntent = new Intent(this, SubMenuActivity.class);
-        myIntent.putExtra("menuItemNumber", menuItemNumber);
-        startActivity(myIntent);
+    public void selectMenuItem(int menuItemNumber){
+        switch (menuItemNumber){
+            case 1:
+                playSuccessSound();
+                Intent trainingIntent = new Intent(this, TrainingActivity.class);
+                trainingIntent.putExtra("currentFoodItemNumber", currentFoodItemNumber);
+                startActivity(trainingIntent);
+                break;
+            case 2:
+                playSuccessSound();
+                Intent getIdIntent = new Intent(this, GetIdActivity.class);
+                getIdIntent.putExtra("currentFoodItemNumber", currentFoodItemNumber);
+                startActivity(getIdIntent);
+                break;
+            case 3:
+                playSuccessSound();
+                finish();
+                break;
+            default:
+                playDisallowedSound();
+                break;
+        }
     }
 
     public void playSuccessSound(){
@@ -167,5 +191,32 @@ public class MainMenuActivity extends Activity {
         rotateAnimation.setInterpolator(new LinearInterpolator());
         rotateAnimation.setRepeatCount(Animation.INFINITE);
         rotateAnimation.setDuration(700);
+    }
+
+    private void initSubMenuTitleTextView(){
+        subMenuTitleTextView = (TextView) findViewById(R.id.sub_menu_title);
+        String title = "";
+        switch (currentFoodItemNumber) {
+            case 1:
+                title = "Triple Steak Stack";
+                break;
+            case 2:
+                title = "Chicken Triple Steak Stack";
+                break;
+            case 3:
+                title = "Cinnabon Coffee";
+                break;
+            case 4:
+                title = "Iced Coffee";
+                break;
+            case 5:
+                title = "Cheesy Burrito";
+                break;
+            default:
+                break;
+        }
+        if(title != "") {
+            subMenuTitleTextView.setText(title);
+        }
     }
 }

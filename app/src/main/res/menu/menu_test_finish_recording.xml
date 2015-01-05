@@ -3,9 +3,6 @@
         android:id="@+id/go_forward_menu_item"
         android:title="GO_FORWARD"/>
     <item
-        android:id="@+id/stop_recording_menu_item"
-        android:title="STOP_RECORDING"/>
-    <item
         android:id="@+id/retry_menu_item"
         android:title="RETRY"/>
 </menu>
