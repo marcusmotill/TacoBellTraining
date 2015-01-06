@@ -113,6 +113,7 @@ public class GetIdActivity extends Activity {
                     testIntent.putExtra("employeeId", employeeID);
                     testIntent.putExtra("currentFoodItemNumber", currentFoodItemNumber);
                     startActivity(testIntent);
+                    finish();
                 }
                 break;
             case 2:

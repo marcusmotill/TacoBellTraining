@@ -26,12 +26,11 @@ import android.widget.TextView;
 import com.google.android.glass.view.WindowUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.GoogleApiClient.ConnectionCallbacks;
 import com.google.android.gms.common.api.GoogleApiClient.OnConnectionFailedListener;
-import com.google.android.gms.drive.Drive;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -56,16 +55,19 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
     private static Context context;
     private final static int maximumWaitTimeForCamera = 5000;
     private final static String TAG = "RecordActivity";
-    private GoogleApiClient mGoogleApiClient;
-    private static String outputFile = "";
+    //private GoogleApiClient mGoogleApiClient;
+    private static String videoOutputFile = "";
+    private static String reportOutputFile = "";
     private boolean finishRecording = false;
     private boolean isRecording = false;
+    private boolean hasSubmittedTest = false;
     private TestReport testReport;
     private GMailSender mailSender;
     private static final int REQUEST_CODE_RESOLUTION = 3;
     private static final int REQUEST_CODE_CREATOR = 2;
-    private static final String uploadEmail = "zjuvmzyozea5@m.youtube.com";
-    private static final String gmailUsername = "tacobelltrainingresults";
+    //private static final String uploadEmail = "zjuvmzyozea5@m.youtube.com";
+    private static final String uploadEmail = "tacobelltrainingresults@gmail.com";
+    private static final String gmailUsername = "tacobelltrainingresults@gmail.com";
     private static final String gmailPassword = "interapt";
 
     @Override
@@ -78,9 +80,9 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
         employeeId = mIntent.getStringExtra("employeeId");
         context = this.getApplicationContext();
         testReport = new TestReport(employeeId, FoodItem.getFoodItemName(currentFoodItemNumber));
-        mailSender = new GMailSender("tacobelltrainingresults@gmail.com", "interapt");
+        mailSender = new GMailSender(gmailUsername, gmailPassword);
         setContentView(R.layout.activity_test);
-        initGoogleDrive();
+        //initGoogleDrive();
         initUI();
         initCountDownTimer();
     }
@@ -88,35 +90,37 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
     @Override
     protected void onStart() {
         super.onStart();
-        mGoogleApiClient.connect();
+        //mGoogleApiClient.connect();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        if (mGoogleApiClient == null) {
-            // Create the API client and bind it to an instance variable.
-            // We use this instance as the callback for connection and connection
-            // failures.
-            // Since no account name is passed, the user is prompted to choose.
-            mGoogleApiClient = new GoogleApiClient.Builder(this)
-                    .addApi(Drive.API)
-                    .addScope(Drive.SCOPE_FILE)
-                    .addConnectionCallbacks(this)
-                    .addOnConnectionFailedListener(this)
-                    .build();
-        }
-        // Connect the client. Once connected, the camera is launched.
-        mGoogleApiClient.connect();
+//        if (mGoogleApiClient == null) {
+//            // Create the API client and bind it to an instance variable.
+//            // We use this instance as the callback for connection and connection
+//            // failures.
+//            // Since no account name is passed, the user is prompted to choose.
+//            mGoogleApiClient = new GoogleApiClient.Builder(this)
+//                    .addApi(Drive.API)
+//                    .addScope(Drive.SCOPE_FILE)
+//                    .addConnectionCallbacks(this)
+//                    .addOnConnectionFailedListener(this)
+//                    .build();
+//        }
+//        // Connect the client. Once connected, the camera is launched.
+//        mGoogleApiClient.connect();
     }
 
     @Override
     public void onPause() {
         super.onPause();
-        if (mGoogleApiClient != null) {
-            mGoogleApiClient.disconnect();
+//        if (mGoogleApiClient != null) {
+//            mGoogleApiClient.disconnect();
+//        }
+        if(isRecording) {
+            stopRecording();
         }
-        stopRecording();
     }
 
     @Override
@@ -169,6 +173,13 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
                     break;
                 case R.id.stop_recording_menu_item:
                     stopRecording();
+                    break;
+                case R.id.dismiss_menu_item:
+                    if(hasSubmittedTest){
+                        Intent myIntent = new Intent(this, MainMenuActivity.class);
+                        startActivity(myIntent);
+                        finish();
+                    }
                     break;
                 default:
                     return true;
@@ -233,14 +244,15 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
 
         }
         String timeStamp = new SimpleDateFormat("MM_dd_yyyy").format(new Date());
-        outputFile = employeeId + "_" + String.valueOf(currentFoodItemNumber) + "_" + timeStamp + ".mp4";
+        videoOutputFile = employeeId + "_" + String.valueOf(currentFoodItemNumber) + "_" + timeStamp + "_video.mp4";
+        reportOutputFile = employeeId + "_" + String.valueOf(currentFoodItemNumber) + "_" + timeStamp + "_report.txt";
         camera.unlock();
         mediaRecorder = new MediaRecorder();
         mediaRecorder.setCamera(camera);
         mediaRecorder.setAudioSource(MediaRecorder.AudioSource.CAMCORDER);
         mediaRecorder.setVideoSource(MediaRecorder.VideoSource.CAMERA);
-        mediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_HIGH));
-        mediaRecorder.setOutputFile(getFile(outputFile).toString());
+        mediaRecorder.setProfile(CamcorderProfile.get(CamcorderProfile.QUALITY_LOW));
+        mediaRecorder.setOutputFile(getFile(videoOutputFile).toString());
         mediaRecorder.setPreviewDisplay(cameraPreview.getHolder().getSurface());
 
         try {
@@ -319,7 +331,9 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
             }
 
             public void onFinish() {
-                stopRecording();
+                if(isRecording){
+                    stopRecording();
+                }
             }
         };
     }
@@ -349,14 +363,14 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
     //     // timerImageView.setImageDrawable(timerIcon);
     // }
 
-    private void initGoogleDrive(){
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(Drive.API)
-                .addScope(Drive.SCOPE_FILE)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
-    }
+//    private void initGoogleDrive(){
+//        mGoogleApiClient = new GoogleApiClient.Builder(this)
+//                .addApi(Drive.API)
+//                .addScope(Drive.SCOPE_FILE)
+//                .addConnectionCallbacks(this)
+//                .addOnConnectionFailedListener(this)
+//                .build();
+//    }
 
     private void initUI(){
         cameraPreviewFrameLayout = (FrameLayout) findViewById(R.id.camera_preview_framelayout);
@@ -410,6 +424,7 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
 
     private void submitTestResult() {
         Log.i(TAG, "Submitting test result");
+        new VideoUpload().execute("");
         //String testReportContent = testReport.generateTestReportContent();
         //saveFileToDrive("report", testReportContent);
         //saveFileToDrive("video", videoFilePath);
@@ -461,13 +476,48 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
     private class VideoUpload extends AsyncTask<String, Void, String> {
 
         @Override
-        protected String doInBackground(String... params) {
-            String videoFilePath = getFile(outputFile).toString();
+        protected void onPreExecute(){
             showUploadingVideoPrompts();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            String videoFilePath = getFile(videoOutputFile).toString();
             try {
-                mailSender.sendMail("YouTube Video", "", gmailUsername, videoFilePath, outputFile, uploadEmail);
+                mailSender.sendMail(videoOutputFile, "", gmailUsername, videoFilePath, videoOutputFile, uploadEmail);
             } catch (Exception e) {
-                Log.d(TAG, "Error sending email to upload video to Youtube");
+                Log.d(TAG, "Error sending email to upload video to Drive");
+            }
+            return "Sent";
+        }
+
+        @Override
+        protected void onPostExecute(String result) {
+            new ReportUpload().execute("");
+        }
+
+        @Override
+        protected void onProgressUpdate(Void... values) {}
+    }
+
+    private class ReportUpload extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected void onPreExecute(){
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            try {
+                String reportFilePath = getFile(reportOutputFile).toString();
+                String reportBody = testReport.generateTestReportContent();
+                FileWriter writer = new FileWriter(getFile(reportOutputFile));
+                writer.append(reportBody);
+                writer.flush();
+                writer.close();
+                mailSender.sendMail(reportOutputFile, "", gmailUsername, reportFilePath, reportOutputFile, uploadEmail);
+            } catch (Exception e) {
+                Log.d(TAG, "Error sending email to upload video to Drive");
             }
             return "Sent";
         }
@@ -475,10 +525,8 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
         @Override
         protected void onPostExecute(String result) {
             showFinishUploadingVideoPrompts();
+            hasSubmittedTest = true;
         }
-
-        @Override
-        protected void onPreExecute() {}
 
         @Override
         protected void onProgressUpdate(Void... values) {}

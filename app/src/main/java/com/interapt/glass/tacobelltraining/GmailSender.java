@@ -65,7 +65,7 @@ public class GMailSender extends javax.mail.Authenticator {
             message.setSender(new InternetAddress(sender));
             message.setSubject(subject);
             message.setDataHandler(handler);
-            addAttachment(attachment, fileName);
+            addAttachment(fileName, attachment, fileName);
             message.setContent(_multipart);
             if (recipients.indexOf(',') > 0)
                 message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(recipients));
@@ -116,11 +116,11 @@ public class GMailSender extends javax.mail.Authenticator {
         }
     }
 
-    public void addAttachment(String filename,String subject) throws Exception {
+    public void addAttachment(String fileName, String filePath,String subject) throws Exception {
         BodyPart messageBodyPart = new MimeBodyPart();
-        DataSource source = new FileDataSource(filename);
+        DataSource source = new FileDataSource(filePath);
         messageBodyPart.setDataHandler(new DataHandler(source));
-        messageBodyPart.setFileName(filename);
+        messageBodyPart.setFileName(fileName);
         _multipart.addBodyPart(messageBodyPart);
 
         BodyPart messageBodyPart2 = new MimeBodyPart();
