@@ -84,21 +84,21 @@
     <orderEntry type="jdk" jdkName="Android 4.4.2 Glass Development Kit Preview" jdkType="Android SDK" />
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" exported="" name="mail" level="project" />
-    <orderEntry type="library" exported="" name="support-annotations-21.0.0" level="project" />
     <orderEntry type="library" exported="" name="support-v4-21.0.0" level="project" />
     <orderEntry type="library" exported="" name="play-services-6.5.87" level="project" />
-    <orderEntry type="library" exported="" name="additionnal" level="project" />
-    <orderEntry type="library" exported="" name="activation" level="project" />
-    <orderEntry type="library" exported="" name="slf4j-api-1.7.7" level="project" />
-    <orderEntry type="library" exported="" name="ari-android-1.2.1" level="project" />
     <orderEntry type="library" exported="" name="google-http-client-android-1.18.0-rc" level="project" />
-    <orderEntry type="library" exported="" name="jsr305-2.0.3" level="project" />
-    <orderEntry type="library" exported="" name="opencv-android-2.4.9p3" level="project" />
     <orderEntry type="library" exported="" name="metrics-core-3.1.0" level="project" />
     <orderEntry type="library" exported="" name="google-http-client-1.18.0-rc" level="project" />
+    <orderEntry type="library" exported="" name="additionnal" level="project" />
     <orderEntry type="library" exported="" name="opencv-java-2.4.9p1" level="project" />
-    <orderEntry type="library" exported="" name="commons-math3-3.2" level="project" />
     <orderEntry type="library" exported="" name="guava-18.0" level="project" />
+    <orderEntry type="library" exported="" name="slf4j-api-1.7.7" level="project" />
+    <orderEntry type="library" exported="" name="support-annotations-21.0.0" level="project" />
+    <orderEntry type="library" exported="" name="ari-android-1.2.1" level="project" />
+    <orderEntry type="library" exported="" name="jsr305-2.0.3" level="project" />
+    <orderEntry type="library" exported="" name="opencv-android-2.4.9p3" level="project" />
+    <orderEntry type="library" exported="" name="commons-math3-3.2" level="project" />
+    <orderEntry type="library" exported="" name="activation" level="project" />
   </component>
 </module>
 
