@@ -17,12 +17,9 @@ import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.google.android.glass.media.Sounds;
 import com.google.android.glass.view.WindowUtils;
-
-import org.w3c.dom.Text;
 
 import javax.annotation.Nonnull;
 
@@ -30,7 +27,6 @@ import io.onthego.ari.KeyDecodingException;
 import io.onthego.ari.android.ActiveAri;
 import io.onthego.ari.android.Ari;
 import io.onthego.ari.event.HandEvent;
-import io.onthego.ari.event.ThumbUpEvent;
 
 public class MainMenuActivity extends Activity implements Ari.StartCallback, Ari.ErrorCallback,
         HandEvent.Listener{
@@ -67,8 +63,7 @@ public class MainMenuActivity extends Activity implements Ari.StartCallback, Ari
         mainMenu5 = (TextView) findViewById(R.id.main_menu_item_5);
 
         menuTextViews = new TextView[]{mainMenu1, mainMenu2, mainMenu3, mainMenu4, mainMenu5};
-        menuTextViews[highlightCount].setTextColor(getResources().getColor(R.color.yellow));
-
+        menuTextViews[highlightCount].setTextColor(Color.parseColor("#16b902"));
         try {
             mAri = ActiveAri.getInstance(getString(R.string.ari_license_key), this)
                     .addListeners(this)
@@ -240,7 +235,7 @@ public class MainMenuActivity extends Activity implements Ari.StartCallback, Ari
         }
         Log.i("Highlight Count", " " + highlightCount);
 
-        menuTextViews[highlightCount].setTextColor(getResources().getColor(R.color.yellow));
+        menuTextViews[highlightCount].setTextColor(Color.parseColor("#16b902"));
 
     }
 
@@ -253,16 +248,12 @@ public class MainMenuActivity extends Activity implements Ari.StartCallback, Ari
                     HandEvent.Type.LEFT_SWIPE, HandEvent.Type.RIGHT_SWIPE,
                     HandEvent.Type.UP_SWIPE, HandEvent.Type.DOWN_SWIPE,
                     HandEvent.Type.THUMB_UP);
-
-
     }
-
 
     @Override
     public void onAriError(@Nonnull final Throwable throwable) {
         final String msg = "Ari error";
         Log.e(TAG, msg, throwable);
-
     }
 
 

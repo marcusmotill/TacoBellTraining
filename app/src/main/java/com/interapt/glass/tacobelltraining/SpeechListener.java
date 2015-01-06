@@ -3,7 +3,10 @@ package com.interapt.glass.tacobelltraining;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.speech.RecognitionListener;
 import android.speech.SpeechRecognizer;
 import android.util.Log;
@@ -101,6 +104,9 @@ class  SpeechListener implements RecognitionListener
                 setMicPromptMessage(MIC_PROMPT_PROCESSING);
                 break;
             case 6:
+                if(!isOnline()) {
+                    startWifiSetting();
+                }
                 if(noSpeechInputTimeOut < 1){
                     noSpeechInputTimeOut++;
                     restartSpeechRecognition();
@@ -329,6 +335,30 @@ class  SpeechListener implements RecognitionListener
 //            case "GetIdActivity":
 //                getIdActivity.setMicPromptMessage(message);
 //                break;
+            default:
+                break;
+        }
+    }
+
+    public boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
+    }
+
+    public void startWifiSetting(){
+        Intent wifiIntent = new Intent(Settings.ACTION_WIRELESS_SETTINGS);
+        switch(parentActivityName){
+            case "MainMenuActivity":
+                mainMenuActivityActivity.startActivity(wifiIntent);
+                break;
+            case "SubMenuActivity":
+                subMenuActivity.startActivity(wifiIntent);
+                break;
+            case "GetIdActivity":
+                getIdActivity.startActivity(wifiIntent);
+                break;
             default:
                 break;
         }

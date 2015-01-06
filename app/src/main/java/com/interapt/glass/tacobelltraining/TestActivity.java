@@ -168,6 +168,9 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
                     }
                     break;
                 case R.id.retry_menu_item:
+                    if(isRecording){
+                        stopRecording();
+                    }
                     finishRecording = false;
                     showRecordingPrompt();
                     break;
@@ -318,7 +321,7 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
                 //int imageResource = getResources().getIdentifier("ic_rec", "drawable", getPackageName());
                 //Drawable recordingIcon = getResources().getDrawable(imageResource);
                 //timerImageView.setImageDrawable(recordingIcon);
-                recordingPromptTextView.setText("GO!");
+                recordingPromptTextView.setText("Get Ready!");
                 startRecording();
             }
         };

@@ -120,16 +120,16 @@ public class FoodItem {
         if (foodItemNumber != 0) {
             switch (foodItemNumber) {
                 case 1:
-                    numberOfSteps = 9;
+                    numberOfSteps = 10;
                     break;
                 case 2:
-                    numberOfSteps = 5;
+                    numberOfSteps = 10;
                     break;
                 case 3:
                     numberOfSteps = 5;
                     break;
                 case 4:
-                    numberOfSteps = 5;
+                    numberOfSteps = 7;
                     break;
                 case 5:
                     numberOfSteps = 9;

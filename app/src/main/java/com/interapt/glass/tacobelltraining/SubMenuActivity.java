@@ -27,7 +27,6 @@ import io.onthego.ari.KeyDecodingException;
 import io.onthego.ari.android.ActiveAri;
 import io.onthego.ari.android.Ari;
 import io.onthego.ari.event.HandEvent;
-import io.onthego.ari.event.ThumbUpEvent;
 
 public class SubMenuActivity extends Activity implements Ari.StartCallback, Ari.ErrorCallback,
         HandEvent.Listener {
@@ -67,7 +66,7 @@ public class SubMenuActivity extends Activity implements Ari.StartCallback, Ari.
         menuItem3 = (TextView) findViewById(R.id.sub_menu_item_3);
 
         menuTextViews = new TextView[]{menuItem1, menuItem2, menuItem3};
-        menuTextViews[highlightCount].setTextColor(getResources().getColor(R.color.yellow));
+        menuTextViews[highlightCount].setTextColor(Color.parseColor("#16b902"));
 
         try {
             mAri = ActiveAri.getInstance(getString(R.string.ari_license_key), this)
@@ -289,7 +288,7 @@ public class SubMenuActivity extends Activity implements Ari.StartCallback, Ari.
             }
         }
         Log.i("Highlight Count", " " + highlightCount);
-        menuTextViews[highlightCount].setTextColor(getResources().getColor(R.color.yellow));
+        menuTextViews[highlightCount].setTextColor(Color.parseColor("#16b902"));
 
     }
 
