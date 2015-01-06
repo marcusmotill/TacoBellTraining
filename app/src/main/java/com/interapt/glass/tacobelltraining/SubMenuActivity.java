@@ -21,17 +21,32 @@ import android.widget.TextView;
 import com.google.android.glass.media.Sounds;
 import com.google.android.glass.view.WindowUtils;
 
-public class SubMenuActivity extends Activity {
+import javax.annotation.Nonnull;
+
+import io.onthego.ari.KeyDecodingException;
+import io.onthego.ari.android.ActiveAri;
+import io.onthego.ari.android.Ari;
+import io.onthego.ari.event.HandEvent;
+import io.onthego.ari.event.ThumbUpEvent;
+
+public class SubMenuActivity extends Activity implements Ari.StartCallback, Ari.ErrorCallback,
+        HandEvent.Listener {
+
     private static final int SPEECH_REQUEST = 0;
+    private static int highlightCount = 0;
     private static SpeechRecognizer speechRecognizer;
     private static Intent speechRecognizerIntent;
     private static ImageView micImageView;
     private static ImageView loadingImageView;
     private static TextView subMenuTitleTextView;
     private static TextView micPromptTextView;
+    private static TextView menuItem1, menuItem2, menuItem3;
+    private static TextView[] menuTextViews;
     private static RotateAnimation rotateAnimation;
     private static TextView partialSpeechResult;
     private static AudioManager audioManager;
+    private static final String TAG = "SubMenuActivity";
+    private ActiveAri mAri;
     private  static int currentFoodItemNumber = 0;
 
     @Override
@@ -46,6 +61,23 @@ public class SubMenuActivity extends Activity {
         partialSpeechResult = (TextView) findViewById(R.id.speech_textview2);
         micPromptTextView = (TextView) findViewById(R.id.mic_prompt_textview2);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
+        menuItem1 = (TextView) findViewById(R.id.sub_menu_item_1);
+        menuItem2 = (TextView) findViewById(R.id.main_menu_item_2);
+        menuItem3 = (TextView) findViewById(R.id.sub_menu_item_3);
+
+        menuTextViews = new TextView[]{menuItem1, menuItem2, menuItem3};
+        menuTextViews[highlightCount].setTextColor(getResources().getColor(R.color.yellow));
+
+        try {
+            mAri = ActiveAri.getInstance(getString(R.string.ari_license_key), this)
+                    .addListeners(this)
+                    .addErrorCallback(this);
+        } catch (final KeyDecodingException e) {
+            Log.e(TAG, "Failed to init Ari: ", e);
+            finish();
+        }
+
         initLoadingAnimation();
         initSpeechRecognition();
         initSubMenuTitleTextView();
@@ -65,12 +97,16 @@ public class SubMenuActivity extends Activity {
     public void onPause() {
         super.onPause();
         speechRecognizer.cancel();
+        if (mAri != null) {
+            mAri.stop();
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
         speechRecognizer.startListening(speechRecognizerIntent);
+        mAri.start(this);
     }
 
     @Override
@@ -219,4 +255,62 @@ public class SubMenuActivity extends Activity {
             subMenuTitleTextView.setText(title);
         }
     }
+
+    @Override
+    public void onHandEvent(HandEvent handEvent) {
+        Log.i(TAG, "Ari " + handEvent.type);
+        String eventType = handEvent.type.toString();
+
+        if (eventType.equals("DOWN_SWIPE") || eventType.equals("UP_SWIPE")) {
+            moveCursor(eventType);
+        }else if(eventType.equals("CLOSED_HAND")){
+            mAri.stop(); //to eliminate selecting twice
+            selectMenuItem(highlightCount + 1);
+        }else if(eventType.equals("OPEN_HAND")){
+            mAri.stop();
+            selectMenuItem(3);
+        }
+
+    }
+
+    private void moveCursor(String eventType) {
+        menuTextViews[highlightCount].setTextColor(getResources().getColor(R.color.white));
+        if (eventType.equals("DOWN_SWIPE")) { // move down
+            if (highlightCount != 2) {
+                highlightCount++;
+            } else {
+                highlightCount = 0;
+            }
+        } else if (eventType.equals("UP_SWIPE")) { // move up
+            if (highlightCount != 0) {
+                highlightCount--;
+            } else {
+                highlightCount = 2;
+            }
+        }
+        Log.i("Highlight Count", " " + highlightCount);
+        menuTextViews[highlightCount].setTextColor(getResources().getColor(R.color.yellow));
+
+    }
+
+    @Override
+    public void onAriStart() {
+        // Enabling and disabling gestures is only available with Indie Developer and
+        // Enterprise licenses.
+         mAri.disable(HandEvent.Type.SWIPE_PROGRESS)
+            .enable(HandEvent.Type.OPEN_HAND, HandEvent.Type.CLOSED_HAND,
+                    HandEvent.Type.LEFT_SWIPE, HandEvent.Type.RIGHT_SWIPE,
+                    HandEvent.Type.UP_SWIPE, HandEvent.Type.DOWN_SWIPE,
+                    HandEvent.Type.THUMB_UP);
+    }
+
+
+    @Override
+    public void onAriError(@Nonnull final Throwable throwable) {
+        final String msg = "Ari error";
+        Log.e(TAG, msg, throwable);
+
+    }
+
+
 }

@@ -9,6 +9,9 @@
     <string name="title_activity_training">TrainingActivity</string>
     <string name="title_activity_test">TestActivity</string>
     <string name="title_activity_get_id">GetIdActivity</string>
+    <string name="ari_license_key">eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJ1c2VyX2VtYWlsIjoibW1vdGlsbEBpbnRlcmFwdC5jb20iLCJvcmRlcl9pZCI6MCwibGljZW5zZSI6ImVudGVycHJpc2UiLCJ1c2VyX3VzZXJuYW1lIjoibW1vdGlsbCIsImV4cCI6MTQyMzk1MTA5MSwib3JkZXJfbGluZSI6MCwidmVyc2lvbiI6Mywib3JkZXJfZGF0ZSI6IjIwMTQtMTItMzEgMjE6NTg6MTEifQ.i1QrlFo2atKYaDe5KL5XOP4zQCARU8XpgEisYLruwrJbw8lbRJy16SMIF81195tlcZ4-nOMKIVVPcAmnfNS0yPxzFgoByzMp4ulErjinoMazLSOpKDJExKkw5gJ3wzzl_eAyIY5fGXtuhEMLqiHhVRx4dzxfhwiVvQ5RgLYyWvE</string>
     <color name="black">#000000</color>
+    <color name="yellow">#FFFBCC</color>
+    <color name="white">#FFFFFF</color>
 
 </resources>

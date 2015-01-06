@@ -1,6 +1,7 @@
 apply plugin: 'com.android.application'
 
 repositories {
+    maven { url 'http://maven.onthego.io/' }
     jcenter()
     flatDir {
         dirs 'prebuilt-libs'
@@ -34,7 +35,11 @@ android {
 dependencies {
     compile 'com.google.android.gms:play-services:6.5.+'
     compile fileTree(dir: 'libs', include: ['*.jar'])
+<<<<<<< HEAD
     compile files('libs/activation.jar')
     compile files('libs/additionnal.jar')
     compile files('libs/mail.jar')
+=======
+    compile 'io.onthego:ari-android:1.2.1'
+>>>>>>> 00707581447f34e453347b0b6a2f3adda1781397
 }
