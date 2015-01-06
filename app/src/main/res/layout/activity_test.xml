@@ -5,31 +5,40 @@
     android:keepScreenOn="true"
     tools:context="com.interapt.glass.tacobelltraining.TestActivity">
 
-    <TextView
-        android:id="@+id/prep_title_textview"
-        android:text="Preparation before testing"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:fontFamily="sans-serif-thin"
-        android:textSize="50px"
+    <ImageView
+        android:id="@+id/test_icon_imageview"
+        android:layout_width="100px"
+        android:layout_height="100px"
         android:layout_alignParentTop="true"
         android:layout_marginTop="50px"
         android:layout_centerHorizontal="true"/>
 
     <TextView
+        android:id="@+id/prep_title_textview"
+        android:text="Test Complete"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="sans-serif-thin"
+        android:visibility="invisible"
+        android:textSize="40px"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="160px"
+        android:layout_centerHorizontal="true"/>
+
+    <TextView
         android:id="@+id/prep_content_textview"
-        android:text="1. Prepare Bolillo Flatbread"
+        android:text="Need prepared Bolillo Flatbread"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-thin"
         android:textSize="40px"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="120px"
+        android:layout_marginTop="210px"
         android:layout_centerHorizontal="true"/>
 
     <TextView
         android:id="@+id/recording_prompt_textview"
-        android:textSize="60px"
+        android:textSize="50px"
         android:text="You have 48 seconds"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

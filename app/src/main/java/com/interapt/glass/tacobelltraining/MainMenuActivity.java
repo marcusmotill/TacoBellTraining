@@ -12,6 +12,7 @@ import android.speech.SpeechRecognizer;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
@@ -39,8 +40,11 @@ public class MainMenuActivity extends Activity implements Ari.StartCallback, Ari
     private static ImageView loadingImageView;
     private static RotateAnimation rotateAnimation;
     private static TextView partialSpeechResult;
-    private static TextView micPromptTextView;
+    //private static TextView micPromptTextView;
     private static TextView mainMenu1, mainMenu2, mainMenu3, mainMenu4, mainMenu5;
+    private static TextView readyMicTextView;
+    private static TextView listeningMicTextView;
+    private static TextView processingMicTextView;
     private static TextView[] menuTextViews;
     private static AudioManager audioManager;
     private static final String TAG = "MainMenuActivity";
@@ -53,7 +57,10 @@ public class MainMenuActivity extends Activity implements Ari.StartCallback, Ari
         micImageView = (ImageView) findViewById(R.id.micImageView1);
         loadingImageView = (ImageView) findViewById(R.id.loadingImageView1);
         partialSpeechResult = (TextView) findViewById(R.id.speech_textview1);
-        micPromptTextView = (TextView) findViewById(R.id.mic_prompt_textview1);
+        //micPromptTextView = (TextView) findViewById(R.id.mic_prompt_textview1);
+        readyMicTextView = (TextView) findViewById(R.id.ready_mic_prompt_textview1);
+        listeningMicTextView = (TextView) findViewById(R.id.listening_mic_prompt_textview1);
+        processingMicTextView = (TextView) findViewById(R.id.processing_mic_prompt_textview1);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
         mainMenu1 = (TextView) findViewById(R.id.main_menu_item_1);
@@ -169,17 +176,30 @@ public class MainMenuActivity extends Activity implements Ari.StartCallback, Ari
         audioManager.playSoundEffect(Sounds.DISALLOWED);
     }
 
+    public void playNavigationSound(){
+        audioManager.playSoundEffect(Sounds.SELECTED);
+    }
+
     public void setMicPromptMessage(String message){
-        micPromptTextView.setText(message);
+        //micPromptTextView.setText(message);
         switch(message){
             case "Speak Now":
-                micPromptTextView.setTextColor(Color.parseColor("#16b902"));
+                //micPromptTextView.setTextColor(Color.parseColor("#16b902"));
+                readyMicTextView.setVisibility(View.VISIBLE);
+                listeningMicTextView.setVisibility(View.INVISIBLE);
+                processingMicTextView.setVisibility(View.INVISIBLE);
                 break;
             case "Listening":
-                micPromptTextView.setTextColor(Color.parseColor("#cc3333"));
+                //micPromptTextView.setTextColor(Color.parseColor("#cc3333"));
+                readyMicTextView.setVisibility(View.INVISIBLE);
+                listeningMicTextView.setVisibility(View.VISIBLE);
+                processingMicTextView.setVisibility(View.INVISIBLE);
                 break;
             case "Processing":
-                micPromptTextView.setTextColor(Color.parseColor("#5B5A5A"));
+                //micPromptTextView.setTextColor(Color.parseColor("#5B5A5A"));
+                readyMicTextView.setVisibility(View.INVISIBLE);
+                listeningMicTextView.setVisibility(View.INVISIBLE);
+                processingMicTextView.setVisibility(View.VISIBLE);
                 break;
             default:
                 break;
@@ -221,12 +241,14 @@ public class MainMenuActivity extends Activity implements Ari.StartCallback, Ari
     private void moveCursor(String eventType) {
         menuTextViews[highlightCount].setTextColor(getResources().getColor(R.color.white));
         if (eventType.equals("DOWN_SWIPE")) { // move down
+            playNavigationSound();
             if (highlightCount != 4) {
                 highlightCount++;
             } else {
                 highlightCount = 0;
             }
         } else if (eventType.equals("UP_SWIPE")) { // move up
+            playNavigationSound();
             if (highlightCount != 0) {
                 highlightCount--;
             } else {
@@ -255,6 +277,4 @@ public class MainMenuActivity extends Activity implements Ari.StartCallback, Ari
         final String msg = "Ari error";
         Log.e(TAG, msg, throwable);
     }
-
-
 }

@@ -12,6 +12,7 @@ import android.speech.SpeechRecognizer;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
@@ -38,7 +39,10 @@ public class SubMenuActivity extends Activity implements Ari.StartCallback, Ari.
     private static ImageView micImageView;
     private static ImageView loadingImageView;
     private static TextView subMenuTitleTextView;
-    private static TextView micPromptTextView;
+    //private static TextView micPromptTextView;
+    private static TextView readyMicTextView;
+    private static TextView listeningMicTextView;
+    private static TextView processingMicTextView;
     private static TextView menuItem1, menuItem2, menuItem3;
     private static TextView[] menuTextViews;
     private static RotateAnimation rotateAnimation;
@@ -58,7 +62,10 @@ public class SubMenuActivity extends Activity implements Ari.StartCallback, Ari.
         micImageView = (ImageView) findViewById(R.id.micImageView2);
         loadingImageView = (ImageView) findViewById(R.id.loadingImageView2);
         partialSpeechResult = (TextView) findViewById(R.id.speech_textview2);
-        micPromptTextView = (TextView) findViewById(R.id.mic_prompt_textview2);
+        //micPromptTextView = (TextView) findViewById(R.id.mic_prompt_textview2);
+        readyMicTextView = (TextView) findViewById(R.id.ready_mic_prompt_textview2);
+        listeningMicTextView = (TextView) findViewById(R.id.listening_mic_prompt_textview2);
+        processingMicTextView = (TextView) findViewById(R.id.processing_mic_prompt_textview2);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
         menuItem1 = (TextView) findViewById(R.id.sub_menu_item_1);
@@ -194,16 +201,25 @@ public class SubMenuActivity extends Activity implements Ari.StartCallback, Ari.
     }
 
     public void setMicPromptMessage(String message){
-        micPromptTextView.setText(message);
+        //micPromptTextView.setText(message);
         switch(message){
             case "Speak Now":
-                micPromptTextView.setTextColor(Color.parseColor("#16b902"));
+                //micPromptTextView.setTextColor(Color.parseColor("#16b902"));
+                readyMicTextView.setVisibility(View.VISIBLE);
+                listeningMicTextView.setVisibility(View.INVISIBLE);
+                processingMicTextView.setVisibility(View.INVISIBLE);
                 break;
             case "Listening":
-                micPromptTextView.setTextColor(Color.parseColor("#cc3333"));
+                //micPromptTextView.setTextColor(Color.parseColor("#cc3333"));
+                readyMicTextView.setVisibility(View.INVISIBLE);
+                listeningMicTextView.setVisibility(View.VISIBLE);
+                processingMicTextView.setVisibility(View.INVISIBLE);
                 break;
             case "Processing":
-                micPromptTextView.setTextColor(Color.parseColor("#5B5A5A"));
+                //micPromptTextView.setTextColor(Color.parseColor("#5B5A5A"));
+                readyMicTextView.setVisibility(View.INVISIBLE);
+                listeningMicTextView.setVisibility(View.INVISIBLE);
+                processingMicTextView.setVisibility(View.VISIBLE);
                 break;
             default:
                 break;
@@ -302,7 +318,6 @@ public class SubMenuActivity extends Activity implements Ari.StartCallback, Ari.
                     HandEvent.Type.UP_SWIPE, HandEvent.Type.DOWN_SWIPE,
                     HandEvent.Type.THUMB_UP);
     }
-
 
     @Override
     public void onAriError(@Nonnull final Throwable throwable) {

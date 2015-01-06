@@ -29,14 +29,28 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceMedium"
-        android:maxLength="14"
-        android:id="@+id/speech_textview1"
+        android:textAppearance="?android:attr/textAppearanceLarge"
         android:fontFamily="sans-serif-light"
-        android:textColor="#5B5A5A"
+        android:textColor="#16b902"
+        android:text="Speak Now"
+        android:id="@+id/ready_mic_prompt_textview1"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
-        android:layout_marginBottom="130px"
+        android:layout_marginBottom="110px"
+        android:layout_marginStart="35px"
+        android:visibility="invisible"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:fontFamily="sans-serif-light"
+        android:textColor="#cc3333"
+        android:text="Listening"
+        android:id="@+id/listening_mic_prompt_textview1"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="110px"
         android:layout_marginStart="50px" />
 
     <TextView
@@ -44,9 +58,22 @@
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:fontFamily="sans-serif-light"
-        android:textColor="#16b902"
-        android:text="Speak Now"
-        android:id="@+id/mic_prompt_textview1"
+        android:textColor="#5B5A5A"
+        android:text="Processing"
+        android:id="@+id/processing_mic_prompt_textview1"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="110px"
+        android:layout_marginStart="40px" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceMedium"
+        android:maxLength="14"
+        android:id="@+id/speech_textview1"
+        android:fontFamily="sans-serif-light"
+        android:textColor="#5B5A5A"
         android:layout_alignParentStart="true"
         android:layout_alignParentBottom="true"
         android:layout_marginBottom="40dp"

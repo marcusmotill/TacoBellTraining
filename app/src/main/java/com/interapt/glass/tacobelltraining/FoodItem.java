@@ -132,13 +132,39 @@ public class FoodItem {
                     numberOfSteps = 7;
                     break;
                 case 5:
-                    numberOfSteps = 9;
+                    numberOfSteps = 5;
                     break;
                 default:
                     break;
             }
         }
         return numberOfSteps;
+    }
+
+    public static int getTestTimeLimit(int foodItemNumber){
+        int timeLimit = 0;
+        if (foodItemNumber != 0) {
+            switch (foodItemNumber) {
+                case 1:
+                    timeLimit = 49000;
+                    break;
+                case 2:
+                    timeLimit = 49000;
+                    break;
+                case 3:
+                    timeLimit = 31000;
+                    break;
+                case 4:
+                    timeLimit = 39000;
+                    break;
+                case 5:
+                    timeLimit = 50000;
+                    break;
+                default:
+                    break;
+            }
+        }
+        return timeLimit;
     }
 
     public static String[] getStepImageArray(int foodItemNumber, int numberOfSteps) {

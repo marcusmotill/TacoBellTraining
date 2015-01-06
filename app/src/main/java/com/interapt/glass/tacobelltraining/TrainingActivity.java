@@ -1,8 +1,10 @@
 package com.interapt.glass.tacobelltraining;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
+import android.media.AudioManager;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
@@ -13,8 +15,8 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.google.android.glass.media.Sounds;
 import com.google.android.glass.view.WindowUtils;
 
 import javax.annotation.Nonnull;
@@ -23,7 +25,6 @@ import io.onthego.ari.KeyDecodingException;
 import io.onthego.ari.android.ActiveAri;
 import io.onthego.ari.android.Ari;
 import io.onthego.ari.event.HandEvent;
-import io.onthego.ari.event.ThumbUpEvent;
 
 
 public class TrainingActivity extends Activity implements Ari.StartCallback, Ari.ErrorCallback,
@@ -35,6 +36,7 @@ public class TrainingActivity extends Activity implements Ari.StartCallback, Ari
     private TextView timerTextView;
     private CountDownTimer countDownTimer;
     private ImageView playPauseImageView;
+    private static AudioManager audioManager;
     /**
      * The amount of time to show each step
      */
@@ -60,6 +62,7 @@ public class TrainingActivity extends Activity implements Ari.StartCallback, Ari
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_training);
         //init
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         timerTextView = (TextView) findViewById(R.id.timer_texview);
         playPauseImageView = (ImageView) findViewById(R.id.play_pause_imageview);
         countDownTimer = new CountDownTimer(STEP_DISPLAY_TIME + 1000, 1000) {
@@ -104,7 +107,6 @@ public class TrainingActivity extends Activity implements Ari.StartCallback, Ari
         }
     }
 
-
     @Override
     protected void onResume() {
         super.onResume();
@@ -148,6 +150,9 @@ public class TrainingActivity extends Activity implements Ari.StartCallback, Ari
                 case R.id.retry_menu_item:
                     resetTraining();
                     break;
+                case R.id.dismiss_menu_item:
+                    finish();
+                    break;
                 default:
                     return true;
             }
@@ -168,6 +173,7 @@ public class TrainingActivity extends Activity implements Ari.StartCallback, Ari
     }
 
     private void nextStep() {
+        playNavigationSound();
         foodItem.nextStep();
         displayStepImage();
         if (!foodItem.isFinishTraining()) {
@@ -244,6 +250,14 @@ public class TrainingActivity extends Activity implements Ari.StartCallback, Ari
         }
     }
 
+    private void playNavigationSound(){
+        audioManager.playSoundEffect(Sounds.SELECTED);
+    }
+
+    private void playSuccessSound(){
+        audioManager.playSoundEffect(Sounds.SUCCESS);
+    }
+
     private void starGetIdActivity() {
         Intent getIdIntent = new Intent(this, GetIdActivity.class);
         getIdIntent.putExtra("currentFoodItemNumber", currentFoodItemNumber);
@@ -271,6 +285,7 @@ public class TrainingActivity extends Activity implements Ari.StartCallback, Ari
         String eventType = handEvent.type.toString();
 
         if (eventType.equals("OPEN_HAND")) {
+            playSuccessSound();
             if(foodItem.isLastStep()){
                 resetTraining();
             }else{
@@ -279,6 +294,7 @@ public class TrainingActivity extends Activity implements Ari.StartCallback, Ari
             }
 
         } else if (eventType.equals("CLOSED_HAND")) {
+            playSuccessSound();
             if(foodItem.isLastStep()){
                 starGetIdActivity();
             }else {
@@ -286,18 +302,19 @@ public class TrainingActivity extends Activity implements Ari.StartCallback, Ari
                     pauseTraining();
             }
 
-
         } else if(eventType.equals("V_SIGN")){
+            playSuccessSound();
             if (!play)
                 startTraining();
         }
          else if (eventType.equals("LEFT_SWIPE")) {
+            playSuccessSound();
             manualNextStep();
 
         } else if (eventType.equals("RIGHT_SWIPE")) {
+            playSuccessSound();
             previousStep();
         }
-
     }
 
     @Override
@@ -309,10 +326,7 @@ public class TrainingActivity extends Activity implements Ari.StartCallback, Ari
                     HandEvent.Type.LEFT_SWIPE, HandEvent.Type.RIGHT_SWIPE,
                     HandEvent.Type.UP_SWIPE, HandEvent.Type.DOWN_SWIPE,
                     HandEvent.Type.V_SIGN);
-
-
     }
-
 
     @Override
     public void onAriError(@Nonnull final Throwable throwable) {

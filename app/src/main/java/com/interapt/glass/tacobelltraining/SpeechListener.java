@@ -259,7 +259,7 @@ class  SpeechListener implements RecognitionListener
                     case "number two":case "number 2":case "2":case "two":case "test":
                         selectMenuItem(2);
                         break;
-                    case "number three":case "number 3":case "3":case "three":case "back to main menu":
+                    case "number three":case "number 3":case "3":case "three":case "back to main menu":case "main menu":
                         selectMenuItem(3);
                         break;
                     default:

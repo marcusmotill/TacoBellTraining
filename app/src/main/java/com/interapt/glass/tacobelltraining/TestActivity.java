@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
@@ -52,6 +53,12 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
     private ImageView timerImageView;
     private CountDownTimer countDownTimer1;
     private CountDownTimer countDownTimer2;
+    private CountDownTimer countDownTimer3;
+    private ImageView testIconImageView;
+    private Drawable infoDrawable;
+    private Drawable successDrawable;
+    private Drawable uploadDrawable;
+    private int testTimeLimit;
     private static Context context;
     private final static int maximumWaitTimeForCamera = 5000;
     private final static String TAG = "RecordActivity";
@@ -77,7 +84,9 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
         super.onCreate(savedInstanceState);
         Intent mIntent = getIntent();
         currentFoodItemNumber = mIntent.getIntExtra("currentFoodItemNumber", 0);
+        testTimeLimit = FoodItem.getTestTimeLimit(currentFoodItemNumber);
         employeeId = mIntent.getStringExtra("employeeId");
+        context = this.getApplicationContext();
         context = this.getApplicationContext();
         testReport = new TestReport(employeeId, FoodItem.getFoodItemName(currentFoodItemNumber));
         mailSender = new GMailSender(gmailUsername, gmailPassword);
@@ -85,6 +94,7 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
         //initGoogleDrive();
         initUI();
         initCountDownTimer();
+        countDownTimer3.start();
     }
 
     @Override
@@ -161,10 +171,8 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
         if (featureId == WindowUtils.FEATURE_VOICE_COMMANDS) {
             switch (item.getItemId()) {
                 case R.id.go_forward_menu_item:
-                    if(finishRecording){
+                    if(finishRecording && !hasSubmittedTest){
                         submitTestResult();
-                    } else {
-                        showRecordingPrompt();
                     }
                     break;
                 case R.id.retry_menu_item:
@@ -179,8 +187,6 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
                     break;
                 case R.id.dismiss_menu_item:
                     if(hasSubmittedTest){
-                        Intent myIntent = new Intent(this, MainMenuActivity.class);
-                        startActivity(myIntent);
                         finish();
                     }
                     break;
@@ -326,7 +332,7 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
             }
         };
 
-        countDownTimer2 =  new CountDownTimer(48000, 1000) {
+        countDownTimer2 =  new CountDownTimer(testTimeLimit, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 countDownTextView.setTextColor(Color.parseColor("#cc3333"));
@@ -336,6 +342,20 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
             public void onFinish() {
                 if(isRecording){
                     stopRecording();
+                }
+            }
+        };
+
+        countDownTimer3 =  new CountDownTimer(4000, 1000) {
+
+            public void onTick(long millisUntilFinished) {
+            }
+
+            public void onFinish() {
+                if(!finishRecording) {
+                    showRecordingPrompt();
+                } else {
+                    finish();
                 }
             }
         };
@@ -376,11 +396,21 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
 //    }
 
     private void initUI(){
+        int imageResource1 = getResources().getIdentifier("ic_action_accept", "drawable", getPackageName());
+        successDrawable = getResources().getDrawable(imageResource1);
+        int imageResource2 = getResources().getIdentifier("ic_help_50", "drawable", getPackageName());
+        infoDrawable = getResources().getDrawable(imageResource2);
+        int imageResource3 = getResources().getIdentifier("ic_action_upload", "drawable", getPackageName());
+        uploadDrawable = getResources().getDrawable(imageResource3);
         cameraPreviewFrameLayout = (FrameLayout) findViewById(R.id.camera_preview_framelayout);
         prepContentTextView = (TextView) findViewById(R.id.prep_content_textview);
         prepTitleTextView = (TextView) findViewById(R.id.prep_title_textview);
         recordingPromptTextView = (TextView) findViewById(R.id.recording_prompt_textview);
         timerImageView = (ImageView) findViewById(R.id.timer_imageview);
+        testIconImageView = (ImageView) findViewById(R.id.test_icon_imageview);
+        testIconImageView.setImageDrawable(infoDrawable);
+        testIconImageView.setMinimumWidth(100);
+        testIconImageView.setMinimumHeight(100);
         FrameLayout.LayoutParams params1 = new FrameLayout.LayoutParams(FrameLayout.LayoutParams.WRAP_CONTENT, FrameLayout.LayoutParams.WRAP_CONTENT);
         params1.gravity = Gravity.CENTER | Gravity.TOP;
         countDownTextView = new TextView(this);
@@ -399,29 +429,40 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
     }
 
     private void showRecordingPrompt(){
+        testIconImageView.setVisibility(View.INVISIBLE);
         prepContentTextView.setVisibility(View.INVISIBLE);
         prepTitleTextView.setVisibility(View.INVISIBLE);
+        recordingPromptTextView.setText("You have " + String.valueOf(testTimeLimit/1000) + "seconds");
         recordingPromptTextView.setVisibility(View.VISIBLE);
         timerImageView.setVisibility(View.VISIBLE);
         countDownTimer1.start();
     }
 
     private void showPostRecordingPrompts(){
+        testIconImageView.setImageDrawable(successDrawable);
+        testIconImageView.setVisibility(View.VISIBLE);
         timerImageView.setVisibility(View.INVISIBLE);
         recordingPromptTextView.setVisibility(View.INVISIBLE);
         prepTitleTextView.setText("Test Complete!");
-        prepContentTextView.setText("Say \"OK Glass, go forward\" \nto submit your test result.");
+        prepContentTextView.setText("Say \"OK Glass, go forward\" to submit");
+        prepContentTextView.setTextColor(Color.parseColor("#16b902"));
         prepTitleTextView.setVisibility(View.VISIBLE);
         prepContentTextView.setVisibility(View.VISIBLE);
     }
 
     private void showFinishUploadingVideoPrompts(){
+        testIconImageView.setImageDrawable(successDrawable);
+        testIconImageView.setVisibility(View.VISIBLE);
+        prepContentTextView.setTextColor(Color.parseColor("#ffffff"));
         prepTitleTextView.setText("Test submitted! ");
         prepContentTextView.setText("Great Job!");
+        countDownTimer3.start();
     }
 
     private void showUploadingVideoPrompts() {
-        prepTitleTextView.setText("Submitting test result");
+        testIconImageView.setVisibility(View.VISIBLE);
+        testIconImageView.setImageDrawable(uploadDrawable);
+        prepTitleTextView.setText("Submitting");
         prepContentTextView.setText("Please wait...");
     }
 
