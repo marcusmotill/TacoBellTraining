@@ -20,8 +20,14 @@ import android.widget.TextView;
 
 import com.google.android.glass.media.Sounds;
 
+import io.onthego.ari.KeyDecodingException;
+import io.onthego.ari.android.ActiveAri;
+import io.onthego.ari.android.Ari;
+import io.onthego.ari.event.HandEvent;
 
-public class GetIdActivity extends Activity {
+
+public class GetIdActivity extends Activity implements Ari.StartCallback, Ari.ErrorCallback,
+        HandEvent.Listener{
 
     private final int ID_LENGTH = 6;
     private SpeechRecognizer speechRecognizer;
@@ -37,6 +43,8 @@ public class GetIdActivity extends Activity {
     private String employeeID = "";
     private int currentFoodItemNumber = 0;
     private boolean gotUserId = false;
+    private ActiveAri mAri;
+    private String TAG = "GetIDActivity";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,6 +60,16 @@ public class GetIdActivity extends Activity {
         yesTextView = (TextView) findViewById(R.id.yes_textview);
         noTextView = (TextView) findViewById(R.id.no_texview);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+
+        try {
+            mAri = ActiveAri.getInstance(getString(R.string.ari_license_key), this)
+                    .addListeners(this)
+                    .addErrorCallback(this);
+        } catch (final KeyDecodingException e) {
+            Log.e(TAG, "Failed to init Ari: ", e);
+            finish();
+        }
+
         initLoadingAnimation();
         initSpeechRecognition();
     }
@@ -60,12 +78,17 @@ public class GetIdActivity extends Activity {
     public void onPause() {
         super.onPause();
         speechRecognizer.cancel();
+
+        if (mAri != null) {
+            mAri.stop();
+        }
     }
 
     @Override
     public void onResume() {
         super.onResume();
         speechRecognizer.startListening(speechRecognizerIntent);
+        mAri.start(this);
     }
 
     @Override
@@ -73,6 +96,14 @@ public class GetIdActivity extends Activity {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.menu_get_id, menu);
         return true;
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        if (mAri != null) {
+            mAri.stop();
+        }
     }
 
     @Override
@@ -183,5 +214,43 @@ public class GetIdActivity extends Activity {
         rotateAnimation.setInterpolator(new LinearInterpolator());
         rotateAnimation.setRepeatCount(Animation.INFINITE);
         rotateAnimation.setDuration(700);
+    }
+
+    @Override
+    public void onAriError(Throwable throwable) {
+        final String msg = "Ari error";
+        Log.e(TAG, msg, throwable);
+    }
+
+    @Override
+    public void onHandEvent(HandEvent handEvent) {
+        Log.i(TAG, "Ari " + handEvent.type);
+        String eventType = handEvent.type.toString();
+
+        if (eventType.equals("LEFT_SWIPE")) {
+
+        } else if(eventType.equals("CLOSED_HAND")){
+            if(yesTextView.getVisibility() == View.VISIBLE){
+                selectMenuItem(1);
+                mAri.stop();
+            }
+
+        } else if(eventType.equals("OPEN_HAND")){
+            if(yesTextView.getVisibility() == View.VISIBLE){
+                selectMenuItem(2);
+            } else if(yesTextView.getVisibility() == View.INVISIBLE){
+                finish();
+                mAri.stop();
+            }
+        }
+    }
+
+    @Override
+    public void onAriStart() {
+        mAri.disable(HandEvent.Type.SWIPE_PROGRESS)
+                .enable(HandEvent.Type.OPEN_HAND, HandEvent.Type.CLOSED_HAND,
+                        HandEvent.Type.LEFT_SWIPE, HandEvent.Type.RIGHT_SWIPE,
+                        HandEvent.Type.UP_SWIPE, HandEvent.Type.DOWN_SWIPE,
+                        HandEvent.Type.THUMB_UP);
     }
 }
