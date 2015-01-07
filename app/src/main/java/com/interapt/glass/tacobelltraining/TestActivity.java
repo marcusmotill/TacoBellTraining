@@ -8,6 +8,7 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
+import android.media.AudioManager;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
 import android.os.AsyncTask;
@@ -24,6 +25,7 @@ import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.google.android.glass.media.Sounds;
 import com.google.android.glass.view.WindowUtils;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GooglePlayServicesUtil;
@@ -58,6 +60,7 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
     private Drawable infoDrawable;
     private Drawable successDrawable;
     private Drawable uploadDrawable;
+    private static AudioManager audioManager;
     private int testTimeLimit;
     private static Context context;
     private final static int maximumWaitTimeForCamera = 5000;
@@ -87,7 +90,7 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
         testTimeLimit = FoodItem.getTestTimeLimit(currentFoodItemNumber);
         employeeId = mIntent.getStringExtra("employeeId");
         context = this.getApplicationContext();
-        context = this.getApplicationContext();
+        audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         testReport = new TestReport(employeeId, FoodItem.getFoodItemName(currentFoodItemNumber));
         mailSender = new GMailSender(gmailUsername, gmailPassword);
         setContentView(R.layout.activity_test);
@@ -197,6 +200,14 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
         }
         // Good practice to pass through to super if not handled
         return super.onMenuItemSelected(featureId, item);
+    }
+
+    public void playSuccessSound(){
+        audioManager.playSoundEffect(Sounds.SUCCESS);
+    }
+
+    public void playTickSound(){
+        audioManager.playSoundEffect(Sounds.SELECTED);
     }
 
     public void startRecording(){
@@ -318,6 +329,7 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
                 if(currentTime <= 3){
                     recordingPromptTextView.setTextColor(Color.parseColor("#16b902"));
                     recordingPromptTextView.setText(String.valueOf(currentTime));
+                    playTickSound();
                 }
             }
 
@@ -328,6 +340,7 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
                 //Drawable recordingIcon = getResources().getDrawable(imageResource);
                 //timerImageView.setImageDrawable(recordingIcon);
                 recordingPromptTextView.setText("Get Ready!");
+                playSuccessSound();
                 startRecording();
             }
         };
@@ -432,7 +445,7 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
         testIconImageView.setVisibility(View.INVISIBLE);
         prepContentTextView.setVisibility(View.INVISIBLE);
         prepTitleTextView.setVisibility(View.INVISIBLE);
-        recordingPromptTextView.setText("You have " + String.valueOf(testTimeLimit/1000) + "seconds");
+        recordingPromptTextView.setText("You have " + String.valueOf(testTimeLimit/1000) + " seconds");
         recordingPromptTextView.setVisibility(View.VISIBLE);
         timerImageView.setVisibility(View.VISIBLE);
         countDownTimer1.start();
@@ -463,6 +476,7 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
         testIconImageView.setVisibility(View.VISIBLE);
         testIconImageView.setImageDrawable(uploadDrawable);
         prepTitleTextView.setText("Submitting");
+        prepContentTextView.setTextColor(Color.parseColor("#ffffff"));
         prepContentTextView.setText("Please wait...");
     }
 
@@ -568,6 +582,7 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
 
         @Override
         protected void onPostExecute(String result) {
+            playSuccessSound();
             showFinishUploadingVideoPrompts();
             hasSubmittedTest = true;
         }

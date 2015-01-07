@@ -271,6 +271,10 @@ public class SubMenuActivity extends Activity implements Ari.StartCallback, Ari.
         }
     }
 
+    public void playNavigationSound(){
+        audioManager.playSoundEffect(Sounds.SELECTED);
+    }
+
     @Override
     public void onHandEvent(HandEvent handEvent) {
         Log.i(TAG, "Ari " + handEvent.type);
@@ -291,12 +295,14 @@ public class SubMenuActivity extends Activity implements Ari.StartCallback, Ari.
     private void moveCursor(String eventType) {
         menuTextViews[highlightCount].setTextColor(getResources().getColor(R.color.white));
         if (eventType.equals("DOWN_SWIPE")) { // move down
+            playNavigationSound();
             if (highlightCount != 2) {
                 highlightCount++;
             } else {
                 highlightCount = 0;
             }
         } else if (eventType.equals("UP_SWIPE")) { // move up
+            playNavigationSound();
             if (highlightCount != 0) {
                 highlightCount--;
             } else {

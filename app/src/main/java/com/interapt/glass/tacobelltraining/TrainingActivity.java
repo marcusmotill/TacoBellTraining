@@ -37,6 +37,7 @@ public class TrainingActivity extends Activity implements Ari.StartCallback, Ari
     private CountDownTimer countDownTimer;
     private ImageView playPauseImageView;
     private static AudioManager audioManager;
+    private TextSpeaker textSpeaker;
     /**
      * The amount of time to show each step
      */
@@ -63,6 +64,7 @@ public class TrainingActivity extends Activity implements Ari.StartCallback, Ari
         setContentView(R.layout.activity_training);
         //init
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
+        //textSpeaker = TextSpeaker(getApplicationContext());
         timerTextView = (TextView) findViewById(R.id.timer_texview);
         playPauseImageView = (ImageView) findViewById(R.id.play_pause_imageview);
         countDownTimer = new CountDownTimer(STEP_DISPLAY_TIME + 1000, 1000) {
@@ -262,6 +264,7 @@ public class TrainingActivity extends Activity implements Ari.StartCallback, Ari
         Intent getIdIntent = new Intent(this, GetIdActivity.class);
         getIdIntent.putExtra("currentFoodItemNumber", currentFoodItemNumber);
         startActivity(getIdIntent);
+        finish();
         Log.d("Training: ", "Starting get id activity");
     }
 
