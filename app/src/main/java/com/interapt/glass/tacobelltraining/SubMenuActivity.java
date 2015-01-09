@@ -13,6 +13,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
@@ -45,6 +46,7 @@ public class SubMenuActivity extends Activity implements Ari.StartCallback, Ari.
     private static TextView processingMicTextView;
     private static TextView menuItem1, menuItem2, menuItem3;
     private static TextView[] menuTextViews;
+    private TextView noInternetTextView;
     private static RotateAnimation rotateAnimation;
     private static TextView partialSpeechResult;
     private static AudioManager audioManager;
@@ -55,6 +57,7 @@ public class SubMenuActivity extends Activity implements Ari.StartCallback, Ari.
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         Intent mIntent = getIntent();
         currentFoodItemNumber = mIntent.getIntExtra("menuItemNumber", 0);
         Log.d("menu item number: ", String.valueOf(currentFoodItemNumber));
@@ -66,6 +69,7 @@ public class SubMenuActivity extends Activity implements Ari.StartCallback, Ari.
         readyMicTextView = (TextView) findViewById(R.id.ready_mic_prompt_textview2);
         listeningMicTextView = (TextView) findViewById(R.id.listening_mic_prompt_textview2);
         processingMicTextView = (TextView) findViewById(R.id.processing_mic_prompt_textview2);
+        noInternetTextView = (TextView) findViewById(R.id.no_internet_textview2);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
         menuItem1 = (TextView) findViewById(R.id.sub_menu_item_1);
@@ -178,9 +182,10 @@ public class SubMenuActivity extends Activity implements Ari.StartCallback, Ari.
                 break;
             case 2:
                 playSuccessSound();
-                Intent getIdIntent = new Intent(this, GetIdActivity.class);
-                getIdIntent.putExtra("currentFoodItemNumber", currentFoodItemNumber);
-                startActivity(getIdIntent);
+                Intent testIntent = new Intent(this, TestActivity.class);
+                testIntent.putExtra("employeeId", "SAMPLE");
+                testIntent.putExtra("currentFoodItemNumber", currentFoodItemNumber);
+                startActivity(testIntent);
                 break;
             case 3:
                 playSuccessSound();
@@ -273,6 +278,13 @@ public class SubMenuActivity extends Activity implements Ari.StartCallback, Ari.
 
     public void playNavigationSound(){
         audioManager.playSoundEffect(Sounds.SELECTED);
+    }
+
+    public void displayNoInternetMessage(){
+        noInternetTextView.setVisibility(View.VISIBLE);
+        readyMicTextView.setVisibility(View.INVISIBLE);
+        listeningMicTextView.setVisibility(View.INVISIBLE);
+        processingMicTextView.setVisibility(View.INVISIBLE);
     }
 
     @Override

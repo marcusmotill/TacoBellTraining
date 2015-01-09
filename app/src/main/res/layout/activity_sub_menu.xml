@@ -79,6 +79,20 @@
         android:layout_marginBottom="40dp"
         android:layout_marginStart="25dp"/>
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="No Internet Connection"
+        android:id="@+id/no_internet_textview2"
+        android:fontFamily="sans-serif-light"
+        android:textColor="#cc3333"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="20px"
+        android:layout_marginStart="10px"
+        android:visibility="invisible"/>
+
     <!--<TextView-->
         <!--android:layout_width="wrap_content"-->
         <!--android:layout_height="wrap_content"-->

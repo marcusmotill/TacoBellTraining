@@ -2,6 +2,7 @@ package com.interapt.glass.tacobelltraining;
 
 import android.content.Context;
 import android.speech.tts.TextToSpeech;
+import android.util.Log;
 
 import java.util.Locale;
 
@@ -86,7 +87,8 @@ public class TextSpeaker {
         String messageToSpeak = "";
         switch(whichMessage){
             case 11:
-                messageToSpeak = "Step 1: Re-grill Bolillo FlatBread";
+                messageToSpeak = "Step 1: Regrill Bolillo FlatBread";
+                Log.i("Text Speaker", "Speaking step 1");
                 break;
             case 12:
                 messageToSpeak = "Step 2: Fold and place on wrap, bubble side down";
@@ -95,16 +97,16 @@ public class TextSpeaker {
                 messageToSpeak = "Step 3: Add 3 portions of steak";
                 break;
             case 14:
-                messageToSpeak = "Key: Drain liquid from steak";
+                messageToSpeak = "Key step: Drain liquid from steak";
                 break;
             case 15:
-                messageToSpeak = "Key: 3 times the portion";
+                messageToSpeak = "Key step: 3 times the portion";
                 break;
             case 16:
-                messageToSpeak = "Key: Use clear bag, marked braised shaved steak";
+                messageToSpeak = "Key step: Use clear bag, marked braised shaved steak";
                 break;
             case 17:
-                messageToSpeak = "Step 4: Add 3 portions of 3-cheese blend";
+                messageToSpeak = "Step 4: Add 2 portions of 3-cheese blend";
                 break;
             case 18:
                 messageToSpeak = "Step 5: Slide onto paddle, closed side first";
@@ -113,7 +115,11 @@ public class TextSpeaker {
                 messageToSpeak = "Step 6: Melt for a single cycle";
                 break;
             case 110:
-                messageToSpeak = "Target: 10.4 ounces";
+                messageToSpeak = "Target: 10 point 4 ounces";
+                break;
+            case 1000:
+                messageToSpeak =  "Training Complete, say ok glass, go forward to proceed to testing, " +
+                        "or, say ok glass, try again to review training";
                 break;
         }
         return messageToSpeak;
@@ -127,5 +133,9 @@ public class TextSpeaker {
                 break;
         }
         return messageToSpeak;
+    }
+
+    public TextToSpeech getTextToSpeechObject(){
+        return textToSpeech;
     }
 }

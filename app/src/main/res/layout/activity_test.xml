@@ -27,7 +27,7 @@
 
     <TextView
         android:id="@+id/prep_content_textview"
-        android:text="Need prepared Bolillo Flatbread"
+        android:text=""
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-thin"
@@ -38,23 +38,13 @@
 
     <TextView
         android:id="@+id/recording_prompt_textview"
-        android:textSize="50px"
-        android:text="You have 48 seconds"
+        android:textSize="40px"
+        android:text="Need prepared Bolillo Flatbread"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-thin"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:visibility="invisible"/>
-
-    <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/ic_timer"
-        android:id="@+id/timer_imageview"
-        android:layout_centerHorizontal="true"
-        android:layout_above="@id/recording_prompt_textview"
-        android:visibility="invisible"/>
+        android:layout_centerVertical="true"/>
 
     <FrameLayout
         android:id="@+id/camera_preview_framelayout"

@@ -1,13 +1,13 @@
 package com.interapt.glass.tacobelltraining;
 
-import com.google.android.glass.widget.CardBuilder;
-import com.google.android.glass.widget.CardScrollView;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
+
+import com.google.android.glass.widget.CardBuilder;
+import com.google.android.glass.widget.CardScrollView;
 
 /**
  * An {@link Activity} showing a tuggable "Hello World!" card.
@@ -98,7 +98,8 @@ public class SplashPageActivity extends Activity {
     }
 
     private void startTraining() {
-        startActivity(new Intent(this, MainMenuActivity.class));
+        //startActivity(new Intent(this, MainMenuActivity.class));
+        startActivity(new Intent(this, CardStyleMainMenuActivity.class));
         finish();
     }
 

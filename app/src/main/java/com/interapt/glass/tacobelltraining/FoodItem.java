@@ -193,5 +193,4 @@ public class FoodItem {
         this.finishTraining = finishTraining;
     }
 
-
 }

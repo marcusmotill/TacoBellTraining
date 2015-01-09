@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.speech.RecognizerIntent;
 import android.speech.SpeechRecognizer;
 import android.util.Log;
+import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,7 +47,9 @@ public class MainMenuActivity extends Activity implements Ari.StartCallback, Ari
     private static TextView listeningMicTextView;
     private static TextView processingMicTextView;
     private static TextView[] menuTextViews;
+    private TextView noInternetTextView;
     private static AudioManager audioManager;
+    private GestureDetector mGestureDetector;
     private static final String TAG = "MainMenuActivity";
     private ActiveAri mAri;
 
@@ -61,6 +64,7 @@ public class MainMenuActivity extends Activity implements Ari.StartCallback, Ari
         readyMicTextView = (TextView) findViewById(R.id.ready_mic_prompt_textview1);
         listeningMicTextView = (TextView) findViewById(R.id.listening_mic_prompt_textview1);
         processingMicTextView = (TextView) findViewById(R.id.processing_mic_prompt_textview1);
+        noInternetTextView = (TextView) findViewById(R.id.no_internet_textview1);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
         mainMenu1 = (TextView) findViewById(R.id.main_menu_item_1);
@@ -224,6 +228,13 @@ public class MainMenuActivity extends Activity implements Ari.StartCallback, Ari
         rotateAnimation.setDuration(700);
     }
 
+    public void displayNoInternetMessage(){
+        noInternetTextView.setVisibility(View.VISIBLE);
+        readyMicTextView.setVisibility(View.INVISIBLE);
+        listeningMicTextView.setVisibility(View.INVISIBLE);
+        processingMicTextView.setVisibility(View.INVISIBLE);
+    }
+
     @Override
     public void onHandEvent(HandEvent handEvent) {
         Log.i(TAG, "Ari " + handEvent.type);
@@ -235,7 +246,6 @@ public class MainMenuActivity extends Activity implements Ari.StartCallback, Ari
             mAri.stop();
             startSubMenuActivity(highlightCount + 1);
         }
-
     }
 
     private void moveCursor(String eventType) {

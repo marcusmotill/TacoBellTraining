@@ -104,13 +104,13 @@ class  SpeechListener implements RecognitionListener
                 setMicPromptMessage(MIC_PROMPT_PROCESSING);
                 break;
             case 6:
-                if(!isOnline()) {
-                    startWifiSetting();
-                }
                 if(noSpeechInputTimeOut < 1){
                     noSpeechInputTimeOut++;
                     restartSpeechRecognition();
                 } else {
+                    if(!isOnline()) {
+                        displayNoInternetMessage();
+                    }
                     restartSpeechRecognition();
                     noSpeechInputTimeOut = 0;
                 }
@@ -335,6 +335,21 @@ class  SpeechListener implements RecognitionListener
 //            case "GetIdActivity":
 //                getIdActivity.setMicPromptMessage(message);
 //                break;
+            default:
+                break;
+        }
+    }
+
+    private void displayNoInternetMessage(){
+        speechRecognizer.stopListening();
+        speechRecognizer.cancel();
+        switch(parentActivityName){
+            case "MainMenuActivity":
+                mainMenuActivityActivity.displayNoInternetMessage();
+                break;
+            case "SubMenuActivity":
+                subMenuActivity.displayNoInternetMessage();
+                break;
             default:
                 break;
         }

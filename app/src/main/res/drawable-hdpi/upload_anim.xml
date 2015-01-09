@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<animation-list   android:id="@+id/upload_anim" android:oneshot="false"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:drawable="@drawable/ic_action_upload1" android:duration="300" />
+    <item android:drawable="@drawable/ic_action_upload2" android:duration="300" />
+    <item android:drawable="@drawable/ic_action_upload3" android:duration="300" />
+</animation-list>

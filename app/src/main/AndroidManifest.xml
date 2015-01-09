@@ -5,22 +5,24 @@
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.CAMERA" />
+
     <uses-feature android:name="android.hardware.camera" />
+
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
 
     <application
         android:allowBackup="true"
-        android:icon="@drawable/ic_launcher"
+        android:icon="@drawable/ic_tacobell_logo"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
-
-        <meta-data android:name="com.google.android.gms.version"
+        <meta-data
+            android:name="com.google.android.gms.version"
             android:value="@integer/google_play_services_version" />
 
         <activity
-            android:name="com.interapt.glass.tacobelltraining.SplashPageActivity"
+            android:name=".SplashPageActivity"
             android:icon="@drawable/ic_tacobell_logo"
             android:label="@string/title_activity_main" >
             <intent-filter>
@@ -32,40 +34,34 @@
                 android:resource="@xml/voice_trigger" />
         </activity>
         <activity
-            android:name="com.interapt.glass.tacobelltraining.MainMenuActivity"
+            android:name=".MainMenuActivity"
             android:label="@string/title_activity_main_menu" >
         </activity>
         <activity
-            android:name="com.interapt.glass.tacobelltraining.SubMenuActivity"
-            android:label="@string/title_activity_sub_menu"
-            android:parentActivityName="com.interapt.glass.tacobelltraining.MainMenuActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.interapt.glass.tacobelltraining.MainMenuActivity" />
+            android:name=".SubMenuActivity"
+            android:label="@string/title_activity_sub_menu" >
         </activity>
         <activity
-            android:name="com.interapt.glass.tacobelltraining.TrainingActivity"
-            android:label="@string/title_activity_training"
-            android:parentActivityName="com.interapt.glass.tacobelltraining.SubMenuActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.interapt.glass.tacobelltraining.SubMenuActivity" />
+            android:name=".TrainingActivity"
+            android:label="@string/title_activity_training" >
         </activity>
         <activity
-            android:name="com.interapt.glass.tacobelltraining.TestActivity"
-            android:label="@string/title_activity_test"
-            android:parentActivityName="com.interapt.glass.tacobelltraining.SubMenuActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.interapt.glass.tacobelltraining.SubMenuActivity" />
+            android:name=".TestActivity"
+            android:label="@string/title_activity_test" >
         </activity>
         <activity
-            android:name="com.interapt.glass.tacobelltraining.GetIdActivity"
-            android:label="@string/title_activity_get_id"
-            android:parentActivityName="com.interapt.glass.tacobelltraining.TrainingActivity" >
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.interapt.glass.tacobelltraining.TrainingActivity" />
+            android:name=".GetIdActivity"
+            android:label="@string/title_activity_get_id" >
+        </activity>
+        <activity
+            android:name=".CardStyleMainMenuActivity"
+            android:label="@string/title_activity_card_style_main_menu"
+            android:launchMode= "singleTask">
+        </activity>
+        <activity
+            android:name=".CardStyleSubMenuActivity"
+            android:label="@string/title_activity_card_style_sub_menu"
+            android:launchMode= "singleTask">
         </activity>
     </application>
 

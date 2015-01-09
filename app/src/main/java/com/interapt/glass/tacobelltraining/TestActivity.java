@@ -6,6 +6,7 @@ import android.content.Intent;
 import android.content.IntentSender;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.media.AudioManager;
@@ -52,14 +53,13 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
     private TextView prepTitleTextView;
     private TextView prepContentTextView;
     private TextView countDownTextView;
-    private ImageView timerImageView;
     private CountDownTimer countDownTimer1;
     private CountDownTimer countDownTimer2;
     private CountDownTimer countDownTimer3;
     private ImageView testIconImageView;
     private Drawable infoDrawable;
     private Drawable successDrawable;
-    private Drawable uploadDrawable;
+    private Drawable timerDrawable;
     private static AudioManager audioManager;
     private int testTimeLimit;
     private static Context context;
@@ -71,6 +71,7 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
     private boolean finishRecording = false;
     private boolean isRecording = false;
     private boolean hasSubmittedTest = false;
+    private boolean isStop = false;
     private TestReport testReport;
     private GMailSender mailSender;
     private static final int REQUEST_CODE_RESOLUTION = 3;
@@ -89,6 +90,9 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
         currentFoodItemNumber = mIntent.getIntExtra("currentFoodItemNumber", 0);
         testTimeLimit = FoodItem.getTestTimeLimit(currentFoodItemNumber);
         employeeId = mIntent.getStringExtra("employeeId");
+        String timeStamp = new SimpleDateFormat("MM_dd_yyyy_hh_mm_ss").format(new Date());
+        videoOutputFile = employeeId + "_" + String.valueOf(currentFoodItemNumber) + "_" + timeStamp + "_video.mp4";
+        reportOutputFile = employeeId + "_" + String.valueOf(currentFoodItemNumber) + "_" + timeStamp + "_report.txt";
         context = this.getApplicationContext();
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
         testReport = new TestReport(employeeId, FoodItem.getFoodItemName(currentFoodItemNumber));
@@ -97,7 +101,11 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
         //initGoogleDrive();
         initUI();
         initCountDownTimer();
-        countDownTimer3.start();
+        if(currentFoodItemNumber == 1 || currentFoodItemNumber == 2){
+            countDownTimer3.start();
+        } else {
+            showRecordingPrompt();
+        }
     }
 
     @Override
@@ -109,6 +117,7 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
     @Override
     protected void onResume() {
         super.onResume();
+        isStop = false;
 //        if (mGoogleApiClient == null) {
 //            // Create the API client and bind it to an instance variable.
 //            // We use this instance as the callback for connection and connection
@@ -131,6 +140,7 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
 //        if (mGoogleApiClient != null) {
 //            mGoogleApiClient.disconnect();
 //        }
+        isStop = true;
         if(isRecording) {
             stopRecording();
         }
@@ -189,9 +199,7 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
                     stopRecording();
                     break;
                 case R.id.dismiss_menu_item:
-                    if(hasSubmittedTest){
-                        finish();
-                    }
+                    finish();
                     break;
                 default:
                     return true;
@@ -263,9 +271,6 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
             Log.d(TAG, "IOException setting preview display: " + e.getMessage());
 
         }
-        String timeStamp = new SimpleDateFormat("MM_dd_yyyy").format(new Date());
-        videoOutputFile = employeeId + "_" + String.valueOf(currentFoodItemNumber) + "_" + timeStamp + "_video.mp4";
-        reportOutputFile = employeeId + "_" + String.valueOf(currentFoodItemNumber) + "_" + timeStamp + "_report.txt";
         camera.unlock();
         mediaRecorder = new MediaRecorder();
         mediaRecorder.setCamera(camera);
@@ -322,11 +327,11 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
     }
 
     private void initCountDownTimer(){
-        countDownTimer1 =  new CountDownTimer(7000, 1000) {
+        countDownTimer1 =  new CountDownTimer(5000, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 int currentTime = (int)millisUntilFinished/1000;
-                if(currentTime <= 3){
+                if(currentTime <= 3 && !isStop){
                     recordingPromptTextView.setTextColor(Color.parseColor("#16b902"));
                     recordingPromptTextView.setText(String.valueOf(currentTime));
                     playTickSound();
@@ -339,9 +344,11 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
                 //int imageResource = getResources().getIdentifier("ic_rec", "drawable", getPackageName());
                 //Drawable recordingIcon = getResources().getDrawable(imageResource);
                 //timerImageView.setImageDrawable(recordingIcon);
-                recordingPromptTextView.setText("Get Ready!");
-                playSuccessSound();
-                startRecording();
+                if(!isStop) {
+                    recordingPromptTextView.setText("Get Ready!");
+                    playSuccessSound();
+                    startRecording();
+                }
             }
         };
 
@@ -359,8 +366,7 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
             }
         };
 
-        countDownTimer3 =  new CountDownTimer(4000, 1000) {
-
+        countDownTimer3 =  new CountDownTimer(2000, 1000) {
             public void onTick(long millisUntilFinished) {
             }
 
@@ -368,6 +374,8 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
                 if(!finishRecording) {
                     showRecordingPrompt();
                 } else {
+                    Intent mainMenuIntent = new Intent(getApplicationContext(), CardStyleMainMenuActivity.class);
+                    startActivity(mainMenuIntent);
                     finish();
                 }
             }
@@ -413,13 +421,12 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
         successDrawable = getResources().getDrawable(imageResource1);
         int imageResource2 = getResources().getIdentifier("ic_help_50", "drawable", getPackageName());
         infoDrawable = getResources().getDrawable(imageResource2);
-        int imageResource3 = getResources().getIdentifier("ic_action_upload", "drawable", getPackageName());
-        uploadDrawable = getResources().getDrawable(imageResource3);
+        int imageResource3 = getResources().getIdentifier("ic_timer", "drawable", getPackageName());
+        timerDrawable = getResources().getDrawable(imageResource3);
         cameraPreviewFrameLayout = (FrameLayout) findViewById(R.id.camera_preview_framelayout);
         prepContentTextView = (TextView) findViewById(R.id.prep_content_textview);
         prepTitleTextView = (TextView) findViewById(R.id.prep_title_textview);
         recordingPromptTextView = (TextView) findViewById(R.id.recording_prompt_textview);
-        timerImageView = (ImageView) findViewById(R.id.timer_imageview);
         testIconImageView = (ImageView) findViewById(R.id.test_icon_imageview);
         testIconImageView.setImageDrawable(infoDrawable);
         testIconImageView.setMinimumWidth(100);
@@ -442,19 +449,18 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
     }
 
     private void showRecordingPrompt(){
-        testIconImageView.setVisibility(View.INVISIBLE);
+        testIconImageView.setImageDrawable(timerDrawable);
         prepContentTextView.setVisibility(View.INVISIBLE);
         prepTitleTextView.setVisibility(View.INVISIBLE);
         recordingPromptTextView.setText("You have " + String.valueOf(testTimeLimit/1000) + " seconds");
         recordingPromptTextView.setVisibility(View.VISIBLE);
-        timerImageView.setVisibility(View.VISIBLE);
         countDownTimer1.start();
     }
 
     private void showPostRecordingPrompts(){
+        playSuccessSound();
         testIconImageView.setImageDrawable(successDrawable);
         testIconImageView.setVisibility(View.VISIBLE);
-        timerImageView.setVisibility(View.INVISIBLE);
         recordingPromptTextView.setVisibility(View.INVISIBLE);
         prepTitleTextView.setText("Test Complete!");
         prepContentTextView.setText("Say \"OK Glass, go forward\" to submit");
@@ -464,6 +470,7 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
     }
 
     private void showFinishUploadingVideoPrompts(){
+        playLoadingAnimation(false);
         testIconImageView.setImageDrawable(successDrawable);
         testIconImageView.setVisibility(View.VISIBLE);
         prepContentTextView.setTextColor(Color.parseColor("#ffffff"));
@@ -473,8 +480,8 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
     }
 
     private void showUploadingVideoPrompts() {
+        playLoadingAnimation(true);
         testIconImageView.setVisibility(View.VISIBLE);
-        testIconImageView.setImageDrawable(uploadDrawable);
         prepTitleTextView.setText("Submitting");
         prepContentTextView.setTextColor(Color.parseColor("#ffffff"));
         prepContentTextView.setText("Please wait...");
@@ -529,6 +536,18 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
     @Override
     public void onConnectionSuspended(int cause) {
         Log.i(TAG, "GoogleApiClient connection suspended");
+    }
+
+    private void playLoadingAnimation(boolean play){
+        AnimationDrawable uploadAnimation;
+        if(play){
+            testIconImageView.setImageDrawable(null);
+            testIconImageView.setBackgroundResource(R.drawable.upload_anim);
+            uploadAnimation = (AnimationDrawable) testIconImageView.getBackground();
+            uploadAnimation.start();
+        } else {
+            testIconImageView.setBackground(null);
+        }
     }
 
     private class VideoUpload extends AsyncTask<String, Void, String> {

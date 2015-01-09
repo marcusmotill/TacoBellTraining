@@ -20,7 +20,6 @@ import android.widget.TextView;
 
 import com.google.android.glass.media.Sounds;
 
-import io.onthego.ari.KeyDecodingException;
 import io.onthego.ari.android.ActiveAri;
 import io.onthego.ari.android.Ari;
 import io.onthego.ari.event.HandEvent;
@@ -61,14 +60,14 @@ public class GetIdActivity extends Activity implements Ari.StartCallback, Ari.Er
         noTextView = (TextView) findViewById(R.id.no_texview);
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
 
-        try {
-            mAri = ActiveAri.getInstance(getString(R.string.ari_license_key), this)
-                    .addListeners(this)
-                    .addErrorCallback(this);
-        } catch (final KeyDecodingException e) {
-            Log.e(TAG, "Failed to init Ari: ", e);
-            finish();
-        }
+//        try {
+//            mAri = ActiveAri.getInstance(getString(R.string.ari_license_key), this)
+//                    .addListeners(this)
+//                    .addErrorCallback(this);
+//        } catch (final KeyDecodingException e) {
+//            Log.e(TAG, "Failed to init Ari: ", e);
+//            finish();
+//        }
 
         initLoadingAnimation();
         initSpeechRecognition();
@@ -88,7 +87,7 @@ public class GetIdActivity extends Activity implements Ari.StartCallback, Ari.Er
     public void onResume() {
         super.onResume();
         speechRecognizer.startListening(speechRecognizerIntent);
-        mAri.start(this);
+        //mAri.start(this);
     }
 
     @Override
@@ -239,8 +238,8 @@ public class GetIdActivity extends Activity implements Ari.StartCallback, Ari.Er
             if(yesTextView.getVisibility() == View.VISIBLE){
                 selectMenuItem(2);
             } else if(yesTextView.getVisibility() == View.INVISIBLE){
-                finish();
                 mAri.stop();
+                finish();
             }
         }
     }
