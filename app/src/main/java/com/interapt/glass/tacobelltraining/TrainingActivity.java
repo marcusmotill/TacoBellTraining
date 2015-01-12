@@ -39,7 +39,7 @@ public class TrainingActivity extends Activity implements Ari.StartCallback, Ari
     private static AudioManager audioManager;
     private static final String LEFT_SWIPE = "LEFT_SWIPE";
     private static final String RIGHT_SWIPE = "RIGHT_SWIPE";
-    private static final String CLOSED_HAND = "CLOSED_HAND";
+    private static final String UP_SWIPE = "UP_SWIPE";
     private static final String DOWN_SWIPE = "DOWN_SWIPE";
     //private TextSpeaker textSpeaker;
 
@@ -333,7 +333,7 @@ public class TrainingActivity extends Activity implements Ari.StartCallback, Ari
                 playSuccessSound();
                 finish();
                 break;
-            case CLOSED_HAND:
+            case UP_SWIPE:
                 playSuccessSound();
                 if (play) {
                     pauseTraining();
@@ -358,9 +358,9 @@ public class TrainingActivity extends Activity implements Ari.StartCallback, Ari
     public void onAriStart() {
         // Enabling and disabling gestures is only available with Indie Developer and
         // Enterprise licenses.
-         mAri.disable(HandEvent.Type.SWIPE_PROGRESS, HandEvent.Type.UP_SWIPE,
+         mAri.disable(HandEvent.Type.SWIPE_PROGRESS, HandEvent.Type.CLOSED_HAND,
                  HandEvent.Type.OPEN_HAND, HandEvent.Type.V_SIGN)
-             .enable(HandEvent.Type.DOWN_SWIPE, HandEvent.Type.CLOSED_HAND,
+             .enable(HandEvent.Type.DOWN_SWIPE, HandEvent.Type.UP_SWIPE,
                      HandEvent.Type.LEFT_SWIPE, HandEvent.Type.RIGHT_SWIPE);
     }
 

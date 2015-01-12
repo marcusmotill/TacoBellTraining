@@ -142,7 +142,7 @@ public class CardStyleSubMenuActivity extends Activity implements Ari.StartCallb
     private void buildViews() {
         trainingView = new CardBuilder(getApplicationContext(), CardBuilder.Layout.MENU)
                 .setText("Training")
-                .setIcon(R.drawable.ic_tacobell_logo)
+                .setIcon(R.drawable.ic_document_50)
                 .setFootnote(FoodItem.getFoodItemName(currentFoodItemNumber))
                 .getView();
         testView = new CardBuilder(getApplicationContext(), CardBuilder.Layout.MENU)

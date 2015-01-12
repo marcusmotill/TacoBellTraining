@@ -12,6 +12,8 @@ import android.hardware.Camera;
 import android.media.AudioManager;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -185,7 +187,11 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
             switch (item.getItemId()) {
                 case R.id.go_forward_menu_item:
                     if(finishRecording && !hasSubmittedTest){
-                        submitTestResult();
+                        if(isOnline()) {
+                            submitTestResult();
+                        } else {
+                            showNoInternetPrompts();
+                        }
                     }
                     break;
                 case R.id.retry_menu_item:
@@ -216,6 +222,10 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
 
     public void playTickSound(){
         audioManager.playSoundEffect(Sounds.SELECTED);
+    }
+
+    public void playDisallowedSound(){
+        audioManager.playSoundEffect(Sounds.DISALLOWED);
     }
 
     public void startRecording(){
@@ -327,7 +337,7 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
     }
 
     private void initCountDownTimer(){
-        countDownTimer1 =  new CountDownTimer(5000, 1000) {
+        countDownTimer1 =  new CountDownTimer(6000, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 int currentTime = (int)millisUntilFinished/1000;
@@ -487,12 +497,28 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
         prepContentTextView.setText("Please wait...");
     }
 
+    private void showNoInternetPrompts(){
+        playDisallowedSound();
+        prepTitleTextView.setText("No Internet Connection");
+        prepContentTextView.setTextColor(Color.parseColor("#ffffff"));
+        prepContentTextView.setText("Please reconnect and try again");
+        countDownTimer3.start();
+    }
+
     private void submitTestResult() {
         Log.i(TAG, "Submitting test result");
         new VideoUpload().execute("");
         //String testReportContent = testReport.generateTestReportContent();
         //saveFileToDrive("report", testReportContent);
         //saveFileToDrive("video", videoFilePath);
+    }
+
+    //Check for an Internet connection
+    private boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
     //Google Drive API
