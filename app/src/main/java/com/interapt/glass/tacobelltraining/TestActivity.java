@@ -99,7 +99,7 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
         //employeeId = mIntent.getStringExtra("employeeId");
         employeeId = "SAMPLE";
         String timeStamp = new SimpleDateFormat("MM_dd_yyyy_hh_mm_ss").format(new Date());
-        videoOutputFile = employeeId + "_" + String.valueOf(currentFoodItemNumber) + "_" + timeStamp + "_video.mp4";
+        videoOutputFile = String.valueOf(currentFoodItemNumber) + "_" + employeeId + "_" + timeStamp + "_video.mp4";
         reportOutputFile = employeeId + "_" + String.valueOf(currentFoodItemNumber) + "_" + timeStamp + "_report.txt";
         context = this.getApplicationContext();
         audioManager = (AudioManager) getSystemService(Context.AUDIO_SERVICE);
@@ -114,9 +114,8 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
 //        } else {
 //            showRecordingPrompt();
 //        }
-        countDownTimer4.start();
         currentLocationString = "";
-        getLocation();
+        countDownTimer4.start();
     }
 
     @Override
@@ -532,6 +531,7 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
 
     private void submitTestResult() {
         Log.i(TAG, "Submitting test result");
+        getLocation();
         new VideoUpload().execute("");
         //String testReportContent = testReport.generateTestReportContent();
         //saveFileToDrive("report", testReportContent);

@@ -9,8 +9,11 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Handler;
 import android.util.Log;
+import android.view.GestureDetector;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
@@ -41,6 +44,7 @@ public class TrainingActivity extends Activity implements Ari.StartCallback, Ari
     private static final String RIGHT_SWIPE = "RIGHT_SWIPE";
     private static final String UP_SWIPE = "UP_SWIPE";
     private static final String DOWN_SWIPE = "DOWN_SWIPE";
+    private GestureDetector mGestureDetector;
     //private TextSpeaker textSpeaker;
 
     /**
@@ -103,6 +107,7 @@ public class TrainingActivity extends Activity implements Ari.StartCallback, Ari
 //            //finish();
 //        }
         //textSpeaker.speakMessage(1000);
+        mGestureDetector = new GestureDetector(this, new GlassDPadController());
         startTraining();
     }
 
@@ -368,6 +373,83 @@ public class TrainingActivity extends Activity implements Ari.StartCallback, Ari
     public void onAriError(@Nonnull final Throwable throwable) {
         final String msg = "Ari error";
         Log.e(TAG, msg, throwable);
+    }
+
+    //Touch pad events
+    @Override
+    public boolean onGenericMotionEvent(MotionEvent event) {
+        mGestureDetector.onTouchEvent(event);
+        return true;
+    }
+
+    public class GlassDPadController extends GestureDetector.SimpleOnGestureListener {
+        private static final int SWIPE_MIN_DISTANCE = 100;
+        private static final int SWIPE_THRESHOLD_VELOCITY = 1000;
+
+        @Override
+        public boolean onFling(MotionEvent start, MotionEvent finish, float velocityX, float velocityY) {
+            try {
+                float totalXTraveled = finish.getX() - start.getX();
+                float totalYTraveled = finish.getY() - start.getY();
+                if (Math.abs(totalXTraveled) > Math.abs(totalYTraveled)) {
+                    if (Math.abs(totalXTraveled) > SWIPE_MIN_DISTANCE && Math.abs(velocityX) > SWIPE_THRESHOLD_VELOCITY) {
+                        playNavigationSound();
+                        if (totalXTraveled > 10) {
+                            Log.d("Event", "On Fling Forward");
+                            manualNextStep();
+                        } else {
+                            Log.d("Event", "On Fling Backward");
+                            pauseTraining();
+                            previousStep();
+                        }
+                    }
+                } else {
+                    if (Math.abs(totalYTraveled) > SWIPE_MIN_DISTANCE && Math.abs(velocityY) > SWIPE_THRESHOLD_VELOCITY) {
+                        if(totalYTraveled > 0) {
+                            Log.d("Event", "On Fling Down");
+                            finish();
+                        } else {
+                            Log.d("Event", "On Fling Up");
+                        }
+                    }
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            return true;
+        }
+
+        @Override
+        public boolean onSingleTapConfirmed(MotionEvent e) {
+            Log.d("Event", "On Single Tap");
+            playNavigationSound();
+            if(play) {
+                pauseTraining();
+            } else {
+                startTraining();
+            }
+            return true;
+        }
+
+        @Override
+        public boolean onSingleTapUp(MotionEvent e) {
+            return super.onSingleTapUp(e);    //To change body of overridden methods use File | Settings | File Templates.
+        }
+
+        @Override
+        public boolean onDoubleTapEvent(MotionEvent e) {
+            return super.onDoubleTapEvent(e);    //To change body of overridden methods use File | Settings | File Templates.
+        }
+
+        @Override
+        public boolean onDown(MotionEvent e) {
+            return super.onDown(e);    //To change body of overridden methods use File | Settings | File Templates.
+        }
+
+        @Override
+        public void onShowPress(MotionEvent e) {
+            super.onShowPress(e);    //To change body of overridden methods use File | Settings | File Templates.
+        }
     }
 
 }
