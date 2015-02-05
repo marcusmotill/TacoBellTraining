@@ -10,7 +10,7 @@
         android:layout_width="100px"
         android:layout_height="100px"
         android:layout_alignParentTop="true"
-        android:layout_marginTop="50px"
+        android:layout_marginTop="10px"
         android:layout_centerHorizontal="true"/>
 
     <TextView
@@ -39,12 +39,13 @@
     <TextView
         android:id="@+id/recording_prompt_textview"
         android:textSize="40px"
-        android:text="Need prepared Bolillo Flatbread"
+        android:text="Please place glass snugly\nand look at item to ensure\nproper recording"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:fontFamily="sans-serif-thin"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"/>
+        android:layout_centerVertical="true"
+        android:gravity="center" />
 
     <FrameLayout
         android:id="@+id/camera_preview_framelayout"
@@ -52,6 +53,7 @@
         android:layout_height="fill_parent"
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true">
+
     </FrameLayout>
 
 </RelativeLayout>

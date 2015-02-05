@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.os.Handler;
 
 import com.google.android.glass.media.Sounds;
 import com.google.android.glass.widget.CardBuilder;
@@ -64,7 +65,7 @@ public class CardStyleMainMenuActivity extends Activity implements Ari.StartCall
         mCardScroller.setAdapter(new CardScrollAdapter() {
             @Override
             public int getCount() {
-                return 5;
+                return 1;
             }
 
             @Override
@@ -79,13 +80,7 @@ public class CardStyleMainMenuActivity extends Activity implements Ari.StartCall
 
             @Override
             public int getPosition(Object item) {
-                int position = -1;
-                for(int i = 0; i < viewArray.length; i++){
-                    if(viewArray[i] == item){
-                        position = i;
-                    }
-                }
-                return position;
+                return 0;
             }
         });
         // Handle the TAP event.
@@ -96,78 +91,91 @@ public class CardStyleMainMenuActivity extends Activity implements Ari.StartCall
             }
         });
         setContentView(mCardScroller);
-        try {
-            mAri = ActiveAri.getInstance(getString(R.string.ari_license_key), this)
-                    .addListeners(this)
-                    .addErrorCallback(this);
-        } catch (final KeyDecodingException e) {
-            Log.e(TAG, "Failed to init Ari: ", e);
-            finish();
-        }
+//        try {
+//            mAri = ActiveAri.getInstance(getString(R.string.ari_license_key), this)
+//                    .addListeners(this)
+//                    .addErrorCallback(this);
+//        } catch (final KeyDecodingException e) {
+//            Log.e(TAG, "Failed to init Ari: ", e);
+//            finish();
+//        }
+        final Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                startSubMenuActivity();
+            }
+        }, 2500);
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         mCardScroller.activate();
-        if(mAri != null){
-            mAri.start(this);
-        }
+//        if(mAri != null){
+//            mAri.start(this);
+//        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         mCardScroller.deactivate();
-        stopAri();
+//        stopAri();
     }
 
     /**
      * Builds a Glass styled main menu view using the {@link CardBuilder} class.
      */
     private void buildViews() {
-        mView1 = new CardBuilder(getApplicationContext(), CardBuilder.Layout.CAPTION)
-                .setText("Triple Steak Stack")
-                .setFootnote("Tap to select")
-                .setTimestamp("Swipe to navigate")
-                .addImage(R.drawable.menu_1)
+                mView1 = new CardBuilder(getApplicationContext(), CardBuilder.Layout.CAPTION)
+                .setText("Sriracha Quesarito")
+                .setFootnote("")
+                .setTimestamp("")
+                .addImage(R.drawable.menu_6)
                 .getView();
-        mView2 = new CardBuilder(getApplicationContext(), CardBuilder.Layout.CAPTION)
-                .setText("Chicken Triple Steak Stack")
-                .setFootnote("Tap to select")
-                .setTimestamp("Swipe to navigate")
-                .addImage(R.drawable.menu_2)
-                .getView();
-        mView3 = new CardBuilder(getApplicationContext(), CardBuilder.Layout.CAPTION)
-                .setText("Cinnabon Coffee")
-                .setFootnote("Tap to select")
-                .setTimestamp("Swipe to navigate")
-                .addImage(R.drawable.menu_3)
-                .getView();
-        mView4 = new CardBuilder(getApplicationContext(), CardBuilder.Layout.CAPTION)
-                .setText("Iced Coffee")
-                .setFootnote("Tap to select")
-                .setTimestamp("Swipe to navigate")
-                .addImage(R.drawable.menu_4)
-                .getView();
-        mView5 = new CardBuilder(getApplicationContext(), CardBuilder.Layout.CAPTION)
-                .setText("Cheesy Burrito")
-                .setFootnote("Tap to select")
-                .setTimestamp("Swipe to navigate")
-                .addImage(R.drawable.menu_5)
-                .getView();
-        viewArray = new View[5];
+//        mView1 = new CardBuilder(getApplicationContext(), CardBuilder.Layout.CAPTION)
+//                .setText("Triple Steak Stack")
+//                .setFootnote("Tap to select")
+//                .setTimestamp("Swipe to navigate")
+//                .addImage(R.drawable.menu_1)
+//                .getView();
+//        mView2 = new CardBuilder(getApplicationContext(), CardBuilder.Layout.CAPTION)
+//                .setText("Chicken Triple Steak Stack")
+//                .setFootnote("Tap to select")
+//                .setTimestamp("Swipe to navigate")
+//                .addImage(R.drawable.menu_2)
+//                .getView();
+//        mView3 = new CardBuilder(getApplicationContext(), CardBuilder.Layout.CAPTION)
+//                .setText("Cinnabon Coffee")
+//                .setFootnote("Tap to select")
+//                .setTimestamp("Swipe to navigate")
+//                .addImage(R.drawable.menu_3)
+//                .getView();
+//        mView4 = new CardBuilder(getApplicationContext(), CardBuilder.Layout.CAPTION)
+//                .setText("Iced Coffee")
+//                .setFootnote("Tap to select")
+//                .setTimestamp("Swipe to navigate")
+//                .addImage(R.drawable.menu_4)
+//                .getView();
+//        mView5 = new CardBuilder(getApplicationContext(), CardBuilder.Layout.CAPTION)
+//                .setText("Cheesy Burrito")
+//                .setFootnote("Tap to select")
+//                .setTimestamp("Swipe to navigate")
+//                .addImage(R.drawable.menu_5)
+//                .getView();
+        viewArray = new View[1];
         viewArray[0] = mView1;
-        viewArray[1] = mView2;
-        viewArray[2] = mView3;
-        viewArray[3] = mView4;
-        viewArray[4] = mView5;
+//        viewArray[1] = mView2;
+//        viewArray[2] = mView3;
+//        viewArray[3] = mView4;
+//        viewArray[4] = mView5;
     }
 
     private void startSubMenuActivity(){
-        playSuccessSound();
+        //playSuccessSound();
         Intent myIntent = new Intent(getApplicationContext(), CardStyleSubMenuActivity.class);
-        myIntent.putExtra("menuItemNumber", mCardScroller.getSelectedItemPosition() + 1);
+        myIntent.putExtra("menuItemNumber", 6);
         startActivity(myIntent);
     }
 

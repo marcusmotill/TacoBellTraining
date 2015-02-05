@@ -110,30 +110,30 @@ public class CardStyleSubMenuActivity extends Activity implements Ari.StartCallb
             }
         });
         setContentView(mCardScroller);
-        try {
-            mAri = ActiveAri.getInstance(getString(R.string.ari_license_key), this)
-                    .addListeners(this)
-                    .addErrorCallback(this);
-        } catch (final KeyDecodingException e) {
-            Log.e(TAG, "Failed to init Ari: ", e);
-            finish();
-        }
+//        try {
+//            mAri = ActiveAri.getInstance(getString(R.string.ari_license_key), this)
+//                    .addListeners(this)
+//                    .addErrorCallback(this);
+//        } catch (final KeyDecodingException e) {
+//            Log.e(TAG, "Failed to init Ari: ", e);
+//            finish();
+//        }
     }
 
     @Override
     protected void onResume() {
         super.onResume();
         mCardScroller.activate();
-        if(mAri != null){
-            mAri.start(this);
-        }
+//        if(mAri != null){
+//            mAri.start(this);
+//        }
     }
 
     @Override
     protected void onPause() {
         super.onPause();
         mCardScroller.deactivate();
-        stopAri();
+//        stopAri();
     }
 
     /**
@@ -142,7 +142,7 @@ public class CardStyleSubMenuActivity extends Activity implements Ari.StartCallb
     private void buildViews() {
         trainingView = new CardBuilder(getApplicationContext(), CardBuilder.Layout.MENU)
                 .setText("Training")
-                .setIcon(R.drawable.ic_tacobell_logo)
+                .setIcon(R.drawable.ic_document_50)
                 .setFootnote(FoodItem.getFoodItemName(currentFoodItemNumber))
                 .getView();
         testView = new CardBuilder(getApplicationContext(), CardBuilder.Layout.MENU)

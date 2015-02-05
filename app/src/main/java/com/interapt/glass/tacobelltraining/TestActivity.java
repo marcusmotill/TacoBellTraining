@@ -12,6 +12,8 @@ import android.hardware.Camera;
 import android.media.AudioManager;
 import android.media.CamcorderProfile;
 import android.media.MediaRecorder;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.CountDownTimer;
@@ -25,6 +27,7 @@ import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.location.*;
 
 import com.google.android.glass.media.Sounds;
 import com.google.android.glass.view.WindowUtils;
@@ -38,7 +41,8 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-
+import java.util.List;
+import java.util.Locale;
 
 public class TestActivity extends Activity implements SurfaceHolder.Callback, ConnectionCallbacks,
         OnConnectionFailedListener {
@@ -56,6 +60,7 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
     private CountDownTimer countDownTimer1;
     private CountDownTimer countDownTimer2;
     private CountDownTimer countDownTimer3;
+    private CountDownTimer countDownTimer4;
     private ImageView testIconImageView;
     private Drawable infoDrawable;
     private Drawable successDrawable;
@@ -80,6 +85,8 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
     private static final String uploadEmail = "tacobelltrainingresults@gmail.com";
     private static final String gmailUsername = "tacobelltrainingresults@gmail.com";
     private static final String gmailPassword = "interapt";
+    private static LocationManager locationManager;
+    private static String currentLocationString;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -89,7 +96,8 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
         Intent mIntent = getIntent();
         currentFoodItemNumber = mIntent.getIntExtra("currentFoodItemNumber", 0);
         testTimeLimit = FoodItem.getTestTimeLimit(currentFoodItemNumber);
-        employeeId = mIntent.getStringExtra("employeeId");
+        //employeeId = mIntent.getStringExtra("employeeId");
+        employeeId = "SAMPLE";
         String timeStamp = new SimpleDateFormat("MM_dd_yyyy_hh_mm_ss").format(new Date());
         videoOutputFile = employeeId + "_" + String.valueOf(currentFoodItemNumber) + "_" + timeStamp + "_video.mp4";
         reportOutputFile = employeeId + "_" + String.valueOf(currentFoodItemNumber) + "_" + timeStamp + "_report.txt";
@@ -101,11 +109,14 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
         //initGoogleDrive();
         initUI();
         initCountDownTimer();
-        if(currentFoodItemNumber == 1 || currentFoodItemNumber == 2){
-            countDownTimer3.start();
-        } else {
-            showRecordingPrompt();
-        }
+//        if(currentFoodItemNumber == 1 || currentFoodItemNumber == 2){
+//            countDownTimer3.start();
+//        } else {
+//            showRecordingPrompt();
+//        }
+        countDownTimer4.start();
+        currentLocationString = "";
+        getLocation();
     }
 
     @Override
@@ -183,11 +194,15 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
     public boolean onMenuItemSelected(int featureId, MenuItem item) {
         if (featureId == WindowUtils.FEATURE_VOICE_COMMANDS) {
             switch (item.getItemId()) {
-                case R.id.go_forward_menu_item:
-                    if(finishRecording && !hasSubmittedTest){
-                        submitTestResult();
-                    }
-                    break;
+//                case R.id.go_forward_menu_item:
+//                    if(finishRecording && !hasSubmittedTest){
+//                        if(isOnline()) {
+//                            submitTestResult();
+//                        } else {
+//                            showNoInternetPrompts();
+//                        }
+//                    }
+//                    break;
                 case R.id.retry_menu_item:
                     if(isRecording){
                         stopRecording();
@@ -218,6 +233,10 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
         audioManager.playSoundEffect(Sounds.SELECTED);
     }
 
+    public void playDisallowedSound(){
+        audioManager.playSoundEffect(Sounds.DISALLOWED);
+    }
+
     public void startRecording(){
         testReport.incrementNumberOfTrials();
         cameraPreview = new SurfaceView(this);
@@ -233,7 +252,13 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
         cameraPreviewFrameLayout.removeView(countDownTextView);
         isRecording = false;
         finishRecording = true;
-        showPostRecordingPrompts();
+        //showPostRecordingPrompts();
+        //countDownTimer4.start();
+        if(isOnline()) {
+            submitTestResult();
+        } else {
+            showNoInternetPrompts();
+        }
     }
 
     private void releaseMediaRecorder() {
@@ -327,7 +352,7 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
     }
 
     private void initCountDownTimer(){
-        countDownTimer1 =  new CountDownTimer(5000, 1000) {
+        countDownTimer1 =  new CountDownTimer(6000, 1000) {
 
             public void onTick(long millisUntilFinished) {
                 int currentTime = (int)millisUntilFinished/1000;
@@ -345,7 +370,7 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
                 //Drawable recordingIcon = getResources().getDrawable(imageResource);
                 //timerImageView.setImageDrawable(recordingIcon);
                 if(!isStop) {
-                    recordingPromptTextView.setText("Get Ready!");
+                    recordingPromptTextView.setVisibility(View.INVISIBLE);
                     playSuccessSound();
                     startRecording();
                 }
@@ -378,6 +403,15 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
                     startActivity(mainMenuIntent);
                     finish();
                 }
+            }
+        };
+
+        countDownTimer4 =  new CountDownTimer(3000, 1000) {
+            public void onTick(long millisUntilFinished) {
+            }
+
+            public void onFinish() {
+                showRecordingPrompt();
             }
         };
     }
@@ -449,11 +483,10 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
     }
 
     private void showRecordingPrompt(){
-        testIconImageView.setImageDrawable(timerDrawable);
+        //testIconImageView.setImageDrawable(timerDrawable);
         prepContentTextView.setVisibility(View.INVISIBLE);
         prepTitleTextView.setVisibility(View.INVISIBLE);
         recordingPromptTextView.setText("You have " + String.valueOf(testTimeLimit/1000) + " seconds");
-        recordingPromptTextView.setVisibility(View.VISIBLE);
         countDownTimer1.start();
     }
 
@@ -463,10 +496,10 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
         testIconImageView.setVisibility(View.VISIBLE);
         recordingPromptTextView.setVisibility(View.INVISIBLE);
         prepTitleTextView.setText("Test Complete!");
-        prepContentTextView.setText("Say \"OK Glass, go forward\" to submit");
-        prepContentTextView.setTextColor(Color.parseColor("#16b902"));
+        //prepContentTextView.setText("Say \"OK Glass, go forward\" to submit");
+        //prepContentTextView.setTextColor(Color.parseColor("#16b902"));
         prepTitleTextView.setVisibility(View.VISIBLE);
-        prepContentTextView.setVisibility(View.VISIBLE);
+        //prepContentTextView.setVisibility(View.VISIBLE);
     }
 
     private void showFinishUploadingVideoPrompts(){
@@ -482,9 +515,19 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
     private void showUploadingVideoPrompts() {
         playLoadingAnimation(true);
         testIconImageView.setVisibility(View.VISIBLE);
+        prepTitleTextView.setVisibility(View.VISIBLE);
+        prepContentTextView.setVisibility(View.VISIBLE);
         prepTitleTextView.setText("Submitting");
         prepContentTextView.setTextColor(Color.parseColor("#ffffff"));
         prepContentTextView.setText("Please wait...");
+    }
+
+    private void showNoInternetPrompts(){
+        playDisallowedSound();
+        prepTitleTextView.setText("No Internet Connection");
+        prepContentTextView.setTextColor(Color.parseColor("#ffffff"));
+        prepContentTextView.setText("Please reconnect and try again");
+        countDownTimer3.start();
     }
 
     private void submitTestResult() {
@@ -493,6 +536,14 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
         //String testReportContent = testReport.generateTestReportContent();
         //saveFileToDrive("report", testReportContent);
         //saveFileToDrive("video", videoFilePath);
+    }
+
+    //Check for an Internet connection
+    private boolean isOnline() {
+        ConnectivityManager cm =
+                (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo netInfo = cm.getActiveNetworkInfo();
+        return netInfo != null && netInfo.isConnectedOrConnecting();
     }
 
     //Google Drive API
@@ -561,7 +612,7 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
         protected String doInBackground(String... params) {
             String videoFilePath = getFile(videoOutputFile).toString();
             try {
-                mailSender.sendMail(videoOutputFile, "", gmailUsername, videoFilePath, videoOutputFile, uploadEmail);
+                mailSender.sendMail(currentLocationString + ". " + videoOutputFile, "", gmailUsername, videoFilePath, videoOutputFile, uploadEmail);
             } catch (Exception e) {
                 Log.d(TAG, "Error sending email to upload video to Drive");
             }
@@ -592,7 +643,7 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
                 writer.append(reportBody);
                 writer.flush();
                 writer.close();
-                mailSender.sendMail(reportOutputFile, "", gmailUsername, reportFilePath, reportOutputFile, uploadEmail);
+                mailSender.sendMail(currentLocationString + ". " + reportOutputFile, "", gmailUsername, reportFilePath, reportOutputFile, uploadEmail);
             } catch (Exception e) {
                 Log.d(TAG, "Error sending email to upload video to Drive");
             }
@@ -664,5 +715,37 @@ public class TestActivity extends Activity implements SurfaceHolder.Callback, Co
 //                        }
 //                    }
 //        });
+    }
+
+    private void getLocation() {
+        //Get location from WiFi
+        locationManager = (LocationManager)
+                getSystemService(Context.LOCATION_SERVICE);
+        if(locationManager.isProviderEnabled(LocationManager.GPS_PROVIDER)) {
+            List<String> providers = locationManager.getProviders(true);
+
+            Location currentLocation = null;
+
+            for (int i=providers.size()-1; i>=0; i--) {
+                currentLocation = locationManager.getLastKnownLocation(providers.get(i));
+                if (currentLocation != null) break;
+            }
+
+            if (currentLocation != null) {
+                Double currentLatitude = currentLocation.getLatitude();
+                Double currentLongitude = currentLocation.getLongitude();
+                Geocoder gcd = new Geocoder(context, Locale.getDefault());
+                try {
+                    List<Address> addresses = gcd.getFromLocation(currentLatitude, currentLongitude, 1);
+                    if (addresses.size() > 0) {
+                        Log.d(TAG, "Current Address: " + addresses.get(0).getLocality());
+                        Log.d(TAG, "Current Address: " + addresses);
+                        currentLocationString = addresses.get(0).getLocality() + ", " + addresses.get(0).getAdminArea();
+                    }
+                } catch (IOException exception) {
+                    Log.d(TAG, "Error parsing address: " + exception);
+                }
+            }
+        }
     }
 }

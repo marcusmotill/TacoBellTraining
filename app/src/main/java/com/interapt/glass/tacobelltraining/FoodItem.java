@@ -105,6 +105,9 @@ public class FoodItem {
                 case 5:
                     foodItemName = "Cheesy Burritos";
                     break;
+                case 6:
+                    foodItemName = "Sriracha Quesarito";
+                    break;
                 default:
                     break;
             }
@@ -134,6 +137,9 @@ public class FoodItem {
                 case 5:
                     numberOfSteps = 5;
                     break;
+                case 6:
+                    numberOfSteps = 10;
+                    break;
                 default:
                     break;
             }
@@ -158,6 +164,9 @@ public class FoodItem {
                     timeLimit = 39000;
                     break;
                 case 5:
+                    timeLimit = 50000;
+                    break;
+                case 6:
                     timeLimit = 50000;
                     break;
                 default:
